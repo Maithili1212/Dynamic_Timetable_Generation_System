@@ -1,0 +1,3312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EduFlow — Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --sky:#38BDF8;
+  --sky-light:#E0F4FF;
+  --black:#0A0A0A;
+  --white:#FFFFFF;
+  --gray:#6B7280;
+  --gray-light:#F4F4F4;
+  --red:#E63946;
+  --pink:#FFB3C6;
+  --mint:#B5EAD7;
+  --yellow:#FFF176;
+  --lavender:#C5B4E3;
+  --sidebar-w:260px;
+}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:#F7F9FC;color:var(--black);}
+
+/* ========== SIDEBAR ========== */
+#sidebar{
+  position:fixed;top:0;left:0;
+  width:var(--sidebar-w);height:100vh;
+  background:var(--black);
+  display:flex;flex-direction:column;
+  z-index:100;
+  padding:0 0 24px;
+}
+.sb-brand{
+  padding:28px 24px 24px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  display:flex;align-items:center;gap:12px;
+}
+.sb-brand-icon{
+  width:40px;height:40px;border-radius:12px;
+  background:var(--sky);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.sb-brand-name{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:22px;letter-spacing:3px;color:#fff;
+}
+.sb-brand-role{
+  font-size:10px;letter-spacing:2px;
+  text-transform:uppercase;color:rgba(255,255,255,0.4);
+  margin-top:1px;
+}
+.sb-section{
+  padding:20px 16px 8px;
+  font-size:10px;letter-spacing:2px;
+  text-transform:uppercase;color:rgba(255,255,255,0.3);
+}
+.sb-item{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 16px;margin:2px 8px;
+  border-radius:12px;
+  color:rgba(255,255,255,0.6);
+  font-size:14px;font-weight:500;
+  cursor:pointer;
+  transition:all 0.2s;
+  text-decoration:none;
+}
+.sb-item:hover{background:rgba(255,255,255,0.07);color:#fff;}
+.sb-item.active{background:var(--sky);color:var(--black);}
+.sb-item .icon{
+  width:32px;height:32px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;
+  background:rgba(255,255,255,0.08);
+  flex-shrink:0;
+}
+.sb-item.active .icon{background:rgba(0,0,0,0.15);}
+.sb-bottom{margin-top:auto;padding:0 8px;}
+.sb-user{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px;border-radius:12px;
+  background:rgba(255,255,255,0.05);
+  margin:0 0 8px;
+}
+.sb-avatar{
+  width:36px;height:36px;border-radius:10px;
+  background:var(--sky);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:16px;color:var(--black);
+  flex-shrink:0;
+}
+.sb-uname{font-size:13px;font-weight:600;color:#fff;}
+.sb-urole{font-size:11px;color:rgba(255,255,255,0.4);}
+.sb-logout{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 16px;border-radius:12px;
+  color:rgba(255,255,255,0.4);font-size:13px;
+  cursor:pointer;transition:all 0.2s;
+}
+.sb-logout:hover{background:rgba(230,57,70,0.15);color:var(--red);}
+
+/* ========== MAIN ========== */
+#main{
+  margin-left:var(--sidebar-w);
+  min-height:100vh;
+  padding:32px;
+  width:calc(100% - var(--sidebar-w));
+  float:right;
+}
+
+/* ========== TOPBAR ========== */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:32px;
+}
+.topbar-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:36px;letter-spacing:2px;
+}
+.topbar-sub{font-size:13px;color:var(--gray);margin-top:2px;}
+.topbar-right{display:flex;align-items:center;gap:12px;}
+.badge-date{
+  background:#fff;border:1px solid #E5E7EB;
+  padding:8px 16px;border-radius:100px;
+  font-size:12px;font-family:'Space Mono',monospace;
+  color:var(--gray);
+}
+
+/* ========== STAT CARDS ========== */
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+  margin-bottom:28px;
+}
+.stat-card{
+  background:#fff;
+  border-radius:20px;
+  padding:24px;
+  border:1px solid #F0F0F0;
+  position:relative;overflow:hidden;
+  transition:transform 0.2s,box-shadow 0.2s;
+  cursor:default;
+}
+.stat-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,0.08);}
+.stat-card-icon{
+  width:48px;height:48px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;margin-bottom:16px;
+}
+.stat-card-n{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:42px;letter-spacing:1px;line-height:1;
+  margin-bottom:4px;
+}
+.stat-card-l{font-size:13px;color:var(--gray);}
+.stat-card-bg{
+  position:absolute;right:-16px;bottom:-16px;
+  font-size:80px;opacity:0.06;
+  font-family:'Bebas Neue',sans-serif;
+  letter-spacing:2px;
+  pointer-events:none;
+}
+
+/* ========== SECTION TITLE ========== */
+.sec-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:22px;letter-spacing:2px;
+  margin-bottom:16px;
+  display:flex;align-items:center;gap:12px;
+}
+.sec-title span{
+  font-family:'DM Sans',sans-serif;
+  font-size:12px;letter-spacing:1px;
+  color:var(--gray);font-weight:400;
+  text-transform:uppercase;
+}
+
+/* ========== TWO COL ========== */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:28px;}
+
+/* ========== CARD ========== */
+.card{
+  background:#fff;border-radius:20px;
+  padding:24px;border:1px solid #F0F0F0;
+  overflow-x:auto;
+}
+.card-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:20px;
+}
+.card-title{font-size:15px;font-weight:600;}
+.card-action{
+  font-size:12px;color:var(--sky);
+  cursor:pointer;font-weight:500;
+  background:var(--sky-light);
+  padding:6px 14px;border-radius:100px;
+  border:none;
+  transition:all 0.2s;
+}
+.card-action:hover{background:var(--sky);color:#fff;}
+
+/* ========== TABLE ========== */
+.ef-table{width:100%;border-collapse:collapse;}
+.ef-table th{
+  font-size:11px;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--gray);
+  padding:8px 12px;text-align:left;
+  border-bottom:1px solid #F0F0F0;
+}
+.ef-table td{
+  padding:12px;font-size:13px;
+  border-bottom:1px solid #F9F9F9;
+}
+.ef-table tr:last-child td{border-bottom:none;}
+.ef-table tr:hover td{background:#FAFAFA;}
+
+/* ========== PILL ========== */
+.pill{
+  display:inline-flex;align-items:center;
+  padding:4px 12px;border-radius:100px;
+  font-size:11px;font-weight:600;letter-spacing:0.5px;
+}
+.pill-blue{background:var(--sky-light);color:#0284C7;}
+.pill-green{background:#D1FAE5;color:#065F46;}
+.pill-red{background:#FEE2E2;color:#991B1B;}
+.pill-yellow{background:#FEF9C3;color:#854D0E;}
+.pill-purple{background:#EDE9FE;color:#5B21B6;}
+
+/* ========== QUICK ACTION CARDS ========== */
+.action-card{
+  background:#fff;border-radius:20px;
+  padding:24px;border:1px solid #F0F0F0;
+  display:flex;flex-direction:column;gap:12px;
+  transition:all 0.2s;cursor:pointer;
+}
+.action-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,0.08);}
+.action-card-icon{
+  width:52px;height:52px;border-radius:16px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;
+}
+.action-card-title{font-size:15px;font-weight:600;}
+.action-card-desc{font-size:12px;color:var(--gray);line-height:1.6;}
+.action-arrow{font-size:20px;color:var(--gray);margin-top:auto;}
+
+/* ========== TIMETABLE PREVIEW ========== */
+.tt-grid{width:100%;border-collapse:collapse;font-size:12px;}
+.tt-grid th{
+  background:var(--black);color:#fff;
+  padding:10px 8px;text-align:center;
+  font-size:11px;letter-spacing:1px;text-transform:uppercase;
+}
+.tt-grid td{
+  padding:8px;text-align:center;
+  border:1px solid #F0F0F0;
+  vertical-align:top;min-width:80px;
+}
+.tt-cell{
+  background:var(--sky-light);
+  border-radius:8px;padding:6px 8px;
+  font-size:11px;line-height:1.4;
+}
+.tt-cell.pink{background:var(--pink);}
+.tt-cell.mint{background:var(--mint);}
+.tt-cell.yellow{background:var(--yellow);}
+.tt-cell.lavender{background:var(--lavender);}
+.tt-cell-sub{font-weight:600;color:var(--black);}
+.tt-cell-fac{color:var(--gray);font-size:10px;}
+
+/* ========== MODAL ========== */
+.modal-bg{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.4);
+  backdrop-filter:blur(8px);
+  z-index:500;
+  display:none;align-items:center;justify-content:center;
+}
+.modal-bg.open{display:flex;}
+.modal-box{
+  background:#fff;border-radius:24px;
+  padding:40px;width:100%;max-width:500px;
+  position:relative;
+  box-shadow:0 32px 80px rgba(0,0,0,0.12);
+  animation:modalIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes modalIn{from{transform:translateY(20px) scale(0.97);opacity:0;}to{transform:translateY(0) scale(1);opacity:1;}}
+.modal-close{
+  position:absolute;top:16px;right:16px;
+  background:#F4F4F4;border:none;
+  width:32px;height:32px;border-radius:50%;
+  font-size:16px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.modal-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:28px;letter-spacing:2px;margin-bottom:4px;
+}
+.modal-sub{font-size:13px;color:var(--gray);margin-bottom:24px;}
+.fg{margin-bottom:16px;}
+.fg label{display:block;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);margin-bottom:6px;}
+.fg input,.fg select{
+  width:100%;background:#F7F9FC;
+  border:1.5px solid #E5E7EB;color:var(--black);
+  padding:12px 16px;border-radius:12px;
+  font-size:14px;font-family:'DM Sans',sans-serif;
+  outline:none;transition:border-color 0.2s;
+}
+.fg input:focus,.fg select:focus{border-color:var(--sky);background:#fff;}
+.btn-primary{
+  width:100%;background:var(--black);color:#fff;
+  border:none;padding:14px;border-radius:100px;
+  font-size:14px;font-weight:600;
+  font-family:'DM Sans',sans-serif;
+  cursor:pointer;letter-spacing:0.5px;
+  transition:all 0.2s;margin-top:8px;
+}
+.btn-primary:hover{background:var(--sky);color:var(--black);}
+
+/* ========== PAGE SECTIONS ========== */
+.page{display:none;}
+.page.active{display:block;}
+
+/* ========== EMPTY STATE ========== */
+.empty{
+  text-align:center;padding:48px 24px;
+  color:var(--gray);
+}
+.empty-icon{font-size:48px;margin-bottom:12px;}
+.empty-text{font-size:14px;}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="sb-brand">
+    <div class="sb-brand-icon">
+      <svg width="22" height="22" viewBox="0 0 120 120" fill="none">
+        <rect x="18" y="20" width="10" height="80" fill="#0A0A0A"/>
+        <rect x="18" y="20" width="38" height="10" fill="#0A0A0A"/>
+        <rect x="18" y="55" width="30" height="10" fill="#0A0A0A"/>
+        <rect x="18" y="90" width="38" height="10" fill="#0A0A0A"/>
+        <rect x="62" y="20" width="10" height="80" fill="#0A0A0A"/>
+        <rect x="62" y="20" width="32" height="10" fill="#0A0A0A"/>
+        <rect x="62" y="55" width="24" height="10" fill="#0A0A0A"/>
+      </svg>
+    </div>
+    <div>
+      <div class="sb-brand-name">EduFlow</div>
+      <div class="sb-brand-role">Admin Panel</div>
+    </div>
+  </div>
+
+  <div class="sb-section">Main</div>
+  <a class="sb-item active" onclick="showPage('dashboard')">
+    <div class="icon">📊</div> Dashboard
+  </a>
+  <a class="sb-item" onclick="showPage('faculty')">
+    <div class="icon">👩‍🏫</div> Faculty
+  </a>
+  <a class="sb-item" onclick="showPage('subjects')">
+    <div class="icon">📚</div> Subjects
+  </a>
+  <a class="sb-item" onclick="showPage('classrooms')">
+    <div class="icon">🏫</div> Classrooms
+  </a>
+
+
+  <div class="sb-section">Timetable</div>
+  <a class="sb-item" onclick="showPage('timetables')">
+    <div class="icon">📅</div> View Timetables
+  </a>
+  <a class="sb-item" onclick="showPage('changelog')">
+    <div class="icon">🔔</div> Changed Timetable
+  </a>
+
+  <div class="sb-bottom">
+    <div class="sb-user">
+      <div class="sb-avatar" id="adminAvatar">A</div>
+      <div>
+        <div class="sb-uname" id="adminName">Admin</div>
+        <div class="sb-urole">Admin / HOD</div>
+      </div>
+    </div>
+    <div class="sb-logout" onclick="logout()">
+      <span>🚪</span> Logout
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="main">
+
+  <!-- ===== DASHBOARD PAGE ===== -->
+  <div class="page active" id="page-dashboard">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Dashboard</div>
+        <div class="topbar-sub">Welcome back! Here's what's happening today.</div>
+      </div>
+      <div class="topbar-right">
+        <div class="badge-date" id="adminDate">—</div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card-icon" style="background:#E0F4FF;">👩‍🏫</div>
+        <div class="stat-card-n" style="color:#0284C7;" id="countFaculty">0</div>
+        <div class="stat-card-l">Total Faculty</div>
+        <div class="stat-card-bg">FAC</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon" style="background:#D1FAE5;">📚</div>
+        <div class="stat-card-n" style="color:#065F46;" id="countSubjects">0</div>
+        <div class="stat-card-l">Total Subjects</div>
+        <div class="stat-card-bg">SUB</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-icon" style="background:#EDE9FE;">📅</div>
+        <div class="stat-card-n" style="color:#5B21B6;" id="countTimetables">0</div>
+        <div class="stat-card-l">Timetables Generated</div>
+        <div class="stat-card-bg">TT</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon" style="background:#FEF9C3;">🏫</div>
+        <div class="stat-card-n" style="color:#854D0E;" id="countClassrooms">0</div>
+        <div class="stat-card-l">Classrooms / Labs</div>
+        <div class="stat-card-bg">TT</div>
+      </div>
+    </div>
+
+    <div class="sec-title">Quick Actions <span>manage everything from here</span></div>
+    <div class="three-col">
+      <div class="action-card" onclick="showPage('faculty')">
+        <div class="action-card-icon" style="background:#E0F4FF;">👩‍🏫</div>
+        <div class="action-card-title">Manage Faculty</div>
+        <div class="action-card-desc">Add, view and manage all faculty members and their departments.</div>
+        <div class="action-arrow">→</div>
+      </div>
+      <div class="action-card" onclick="showPage('subjects')">
+        <div class="action-card-icon" style="background:#D1FAE5;">📚</div>
+        <div class="action-card-title">Manage Subjects</div>
+        <div class="action-card-desc">Add subjects, assign faculty and set grade points for timetable generation.</div>
+        <div class="action-arrow">→</div>
+      </div>
+      <div class="action-card" onclick="showPage('classrooms')">
+        <div class="action-card-icon" style="background:#FEF9C3;">🏫</div>
+        <div class="action-card-title">Manage Classrooms</div>
+        <div class="action-card-desc">Add classrooms and labs, set capacity and type for timetable assignment.</div>
+        <div class="action-arrow">→</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Recent Faculty</div>
+          <button class="card-action" onclick="showPage('faculty')">View All</button>
+        </div>
+        <table class="ef-table" id="dashFacultyTable">
+          <thead><tr><th>Name</th><th>Department</th><th>Status</th></tr></thead>
+          <tbody id="dashFacultyBody">
+            <tr><td colspan="3"><div class="empty"><div class="empty-icon">👩‍🏫</div><div class="empty-text">No faculty added yet</div></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Recent Subjects</div>
+          <button class="card-action" onclick="showPage('subjects')">View All</button>
+        </div>
+        <table class="ef-table" id="dashSubjectTable">
+          <thead><tr><th>Subject</th><th>Faculty</th><th>Grades</th></tr></thead>
+          <tbody id="dashSubjectBody">
+            <tr><td colspan="3"><div class="empty"><div class="empty-icon">📚</div><div class="empty-text">No subjects added yet</div></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FACULTY PAGE ===== -->
+  <div class="page" id="page-faculty">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Faculty Management</div>
+        <div class="topbar-sub">Select a year to view and manage faculty</div>
+      </div>
+    </div>
+    <!-- Year selector blocks -->
+    <div id="facultyYearBlocks"></div>
+    <!-- Detail view (shown after clicking a year block) -->
+    <div id="facultyYearDetail" style="display:none;"></div>
+  </div>
+
+  <!-- ===== SUBJECTS PAGE ===== -->
+  <div class="page" id="page-subjects">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Subjects</div>
+        <div class="topbar-sub">Select a year to view and manage subjects</div>
+      </div>
+      <div class="topbar-right">
+        <button class="card-action" onclick="openModal('modalSubject')" style="font-size:14px;padding:10px 20px;">+ Add Subject</button>
+      </div>
+    </div>
+    <!-- Year selector blocks -->
+    <div id="subjectYearBlocks"></div>
+    <!-- Detail view -->
+    <div id="subjectYearDetail" style="display:none;"></div>
+  </div>
+
+
+
+  <!-- ===== CLASSROOMS PAGE ===== -->
+  <div class="page" id="page-classrooms">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Classrooms &amp; Labs</div>
+        <div class="topbar-sub">Manage all classrooms and lab rooms</div>
+      </div>
+      <div class="topbar-right">
+        <button class="card-action" onclick="openModal('modalClassroom')" style="font-size:14px;padding:10px 20px;">+ Add Room</button>
+      </div>
+    </div>
+    <div class="card">
+      <table class="ef-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Room Name</th>
+            <th>Room Number</th>
+            <th>Type</th>
+            <th>Assignment</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="classroomTableBody">
+          <tr><td colspan="6"><div class="empty"><div class="empty-icon">🏫</div><div class="empty-text">No classrooms added yet. Click "+ Add Room" to get started.</div></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- Lab occupancy check result -->
+    <div id="labCheckResult" style="display:none;margin-top:12px;padding:12px 16px;border-radius:12px;font-size:13px;"></div>
+  </div>
+
+  <!-- ===== TIMETABLES PAGE ===== -->
+  <div class="page" id="page-timetables">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Timetables</div>
+        <div class="topbar-sub">Generate and view timetables for each division</div>
+      </div>
+      <div class="topbar-right">
+        <button class="card-action" onclick="showGenerator()" style="font-size:14px;padding:10px 20px;">+ Generate New</button>
+      </div>
+    </div>
+
+    <!-- STEP 0: Timing Setup -->
+    <div id="ttTiming" class="card" style="margin-bottom:20px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;margin-bottom:6px;">Step 0 — Timing Setup</div>
+      <div style="font-size:13px;color:var(--gray);margin-bottom:20px;">College hours: <strong>9:15 AM – 5:00 PM</strong>. Enter durations and the system builds all slots automatically.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;margin-bottom:16px;">
+        <div class="fg">
+          <label>Lecture Duration (min)</label>
+          <input type="number" id="ttLecMin" placeholder="e.g. 50" min="30" max="90" value="50"/>
+        </div>
+        <div class="fg">
+          <label>Lab Duration (min)</label>
+          <input type="number" id="ttLabMin" placeholder="e.g. 100" min="60" max="180" value="100"/>
+        </div>
+        <div class="fg">
+          <label>Short Break (min)</label>
+          <input type="number" id="ttShortBreak" placeholder="e.g. 15" min="5" max="30" value="20"/>
+        </div>
+        <div class="fg">
+          <label>Long Break (min)</label>
+          <input type="number" id="ttLongBreak" placeholder="e.g. 50" min="20" max="90" value="50"/>
+        </div>
+      </div>
+      <!-- Preview of generated slots -->
+      <div id="ttTimingPreview" style="background:#F7F9FC;border-radius:14px;padding:16px;margin-bottom:16px;display:none;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#6B7280;margin-bottom:10px;">Generated Slot Preview</div>
+        <div id="ttTimingSlotList" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+      </div>
+      <div style="display:flex;gap:12px;">
+        <button class="btn-primary" style="max-width:200px;" onclick="previewTiming()">Preview Slots</button>
+        <button class="btn-primary" style="max-width:220px;background:#065F46;" onclick="confirmTiming()">Confirm & Next →</button>
+      </div>
+    </div>
+
+    <!-- STEP 1: Setup -->
+    <div id="ttSetup" class="card" style="margin-bottom:20px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;margin-bottom:20px;">Step 1 — Division Setup</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;">
+        <div class="fg">
+          <label>Year</label>
+          <select id="ttYear" onchange="updateTTDivisions()">
+            <option value="">Select Year</option>
+            <option>FY</option>
+            <option>SY</option>
+            <option>TY</option>
+            <option>TY-DS</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Division</label>
+          <select id="ttDiv">
+            <option value="">Select Division</option>
+            <option>A</option>
+            <option>B</option>
+            <option>C</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Semester</label>
+          <select id="ttSem">
+            <option value="">Select Semester</option>
+            <option>Semester 1</option>
+            <option>Semester 2</option>
+            <option>Semester 3</option>
+            <option>Semester 4</option>
+            <option>Semester 5</option>
+            <option>Semester 6</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Department</label>
+          <select id="ttDept">
+            <option value="">Select Department</option>
+            <option>CSE - AIML</option>
+            <option>CSE - DS</option>
+            <option>CSE</option>
+            <option>Electrical</option>
+            <option>Mechanical</option>
+            <option>ENTC</option>
+            <option>BSH</option>
+            <option>Biotech</option>
+            <option>Civil</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-primary" style="max-width:200px;" onclick="loadSubjectsForTT()">Next → Assign Subjects</button>
+    </div>
+
+    <!-- STEP 2: Assign subjects to this division -->
+    <div id="ttAssign" class="card" style="margin-bottom:20px;display:none;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;margin-bottom:6px;">Step 2 — Assign Subjects & Faculty</div>
+      <div style="font-size:13px;color:var(--gray);margin-bottom:20px;">Select subjects for this division and assign faculty to each</div>
+      <div id="ttSubjectList"></div>
+      <button class="btn-primary" style="max-width:220px;margin-top:16px;" onclick="generateTimetable()">⚡ Generate Timetable</button>
+    </div>
+
+    <!-- STEP 3: Generated Timetable -->
+    <div id="ttResult" style="display:none;">
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+          <div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;" id="ttResultTitle">Timetable</div>
+            <div style="font-size:13px;color:var(--gray);" id="ttResultSub">—</div>
+          </div>
+          <div style="display:flex;gap:10px;">
+            <button onclick="printTT()" style="background:#D1FAE5;color:#065F46;border:none;padding:10px 20px;border-radius:100px;font-size:13px;cursor:pointer;font-weight:600;">🖨 Print</button>
+            <button onclick="saveTimetable()" style="background:var(--black);color:#fff;border:none;padding:10px 20px;border-radius:100px;font-size:13px;cursor:pointer;font-weight:600;">💾 Save</button>
+            <button onclick="resetGenerator()" style="background:#FEE2E2;color:#991B1B;border:none;padding:10px 20px;border-radius:100px;font-size:13px;cursor:pointer;font-weight:600;">✕ Close</button>
+          </div>
+        </div>
+        <div id="ttWarning" style="display:none;margin:-4px 0 14px 0;padding:10px 12px;border-radius:10px;background:#FEF3C7;color:#92400E;font-size:12px;font-weight:600;border:1px solid #FCD34D;"></div>
+        <div id="ttLabSummary" style="display:none;margin:-4px 0 14px 0;padding:12px 14px;border-radius:10px;background:#F0F9FF;border:1px solid #BAE6FD;flex-wrap:wrap;gap:4px;"></div>
+        <div style="overflow-x:auto;" id="ttGridWrap"></div>
+      </div>
+    </div>
+
+    <!-- Saved Timetables List -->
+    <div class="card" id="savedTTCard">
+      <div class="card-header">
+        <div class="card-title">Saved Timetables</div>
+      </div>
+      <div id="savedTTList">
+        <div class="empty"><div class="empty-icon">📅</div><div class="empty-text">No timetables saved yet.</div></div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- ===== CHANGED TIMETABLE PAGE ===== -->
+  <div class="page" id="page-changelog">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Changed Timetable</div>
+        <div class="topbar-sub">All timetable changes made by faculty — cover, title edits, and slot changes.</div>
+      </div>
+      <div class="topbar-right">
+        <button onclick="clearChangelog()" style="background:#FEE2E2;color:#991B1B;border:none;padding:9px 18px;border-radius:100px;font-size:13px;font-weight:600;cursor:pointer;">🗑 Clear All Logs</button>
+      </div>
+    </div>
+  
+    <!-- Filter row -->
+    <div style="background:#fff;border:1px solid #F0F0F0;border-radius:16px;padding:16px 20px;margin-bottom:20px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+      <span style="font-size:12px;color:#6B7280;font-weight:600;">Filter:</span>
+      <button class="cl-filter active" data-filter="all" onclick="setChangelogFilter('all',this)" style="padding:6px 14px;border-radius:100px;border:none;background:#E0F4FF;color:#0284C7;font-size:12px;font-weight:600;cursor:pointer;">All</button>
+      <button class="cl-filter" data-filter="Cover Slot" onclick="setChangelogFilter('Cover Slot',this)" style="padding:6px 14px;border-radius:100px;border:none;background:#F4F4F4;color:#374151;font-size:12px;font-weight:600;cursor:pointer;">Cover Slot</button>
+      <button class="cl-filter" data-filter="Edit Title" onclick="setChangelogFilter('Edit Title',this)" style="padding:6px 14px;border-radius:100px;border:none;background:#F4F4F4;color:#374151;font-size:12px;font-weight:600;cursor:pointer;">Edit Title</button>
+      <button class="cl-filter" data-filter="Change Slot" onclick="setChangelogFilter('Change Slot',this)" style="padding:6px 14px;border-radius:100px;border:none;background:#F4F4F4;color:#374151;font-size:12px;font-weight:600;cursor:pointer;">Change Slot</button>
+    </div>
+  
+    <!-- Log table -->
+    <div style="background:#fff;border:1px solid #F0F0F0;border-radius:20px;padding:24px;">
+      <div id="changelogList"></div>
+    </div>
+    </div>
+
+</div>
+
+<!-- MODAL: Add Classroom -->
+<div class="modal-bg" id="modalClassroom">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modalClassroom')">✕</button>
+    <div class="modal-title">Add Classroom / Lab</div>
+    <div class="modal-sub">Fill in the room details below</div>
+    <div class="fg"><label>Room Name</label><input type="text" id="roomName" placeholder="e.g. CSAMCR01, Lab 1" oninput="checkLabOccupied()"/></div>
+    <div class="fg"><label>Room Number</label><input type="text" id="roomNumber" placeholder="e.g. 01, 101"/></div>
+    <div class="fg"><label>Type</label>
+      <select id="roomType" onchange="toggleRoomTypeFields()">
+        <option value="Classroom">Classroom</option>
+        <option value="Lab">Lab</option>
+        <option value="Seminar Hall">Seminar Hall</option>
+        <option value="Lecture Hall">Lecture Hall</option>
+      </select>
+    </div>
+
+    <!-- Shown for Classroom / Seminar Hall / Lecture Hall -->
+    <div class="fg" id="roomDivWrap">
+      <label>Assign to Division</label>
+      <select id="roomDivision">
+        <option value="">No fixed division (shared)</option>
+        <option value="FY-A">FY – Division A</option>
+        <option value="FY-B">FY – Division B</option>
+        <option value="FY-C">FY – Division C</option>
+        <option value="SY-A">SY – Division A</option>
+        <option value="SY-B">SY – Division B</option>
+        <option value="SY-C">SY – Division C</option>
+        <option value="TY-A">TY – Division A</option>
+        <option value="TY-B">TY – Division B</option>
+        <option value="TY-C">TY – Division C</option>
+      </select>
+      <div style="font-size:11px;color:var(--gray);margin-top:4px;">Lectures for this division will always be held in this room.</div>
+    </div>
+
+    <!-- Shown for Lab only -->
+    <div id="roomLabWrap" style="display:none;">
+      <div class="fg">
+        <label>Assign to Subject (Lab Subject)</label>
+        <select id="roomLabSubject">
+          <option value="">Select subject — optional</option>
+        </select>
+        <div style="font-size:11px;color:var(--gray);margin-top:4px;">If selected, this lab will always be used for this subject across all divisions.</div>
+      </div>
+      <div class="fg">
+        <label>Assign to Division — optional</label>
+        <select id="roomLabDivision">
+          <option value="">All divisions (shared lab)</option>
+          <option value="FY-A">FY – Division A</option>
+          <option value="FY-B">FY – Division B</option>
+          <option value="FY-C">FY – Division C</option>
+          <option value="SY-A">SY – Division A</option>
+          <option value="SY-B">SY – Division B</option>
+          <option value="SY-C">SY – Division C</option>
+          <option value="TY-A">TY – Division A</option>
+          <option value="TY-B">TY – Division B</option>
+          <option value="TY-C">TY – Division C</option>
+        </select>
+        <div style="font-size:11px;color:var(--gray);margin-top:4px;">Leave blank if this lab is shared across divisions.</div>
+      </div>
+      <div id="roomLabOccupied" style="display:none;margin-bottom:8px;padding:10px 12px;border-radius:10px;background:#FEE2E2;border:1px solid #FECACA;color:#991B1B;font-size:12px;font-weight:600;"></div>
+    </div>
+
+    <div id="roomError" style="color:#E63946;font-size:13px;margin-bottom:8px;display:none;"></div>
+    <button class="btn-primary" onclick="addClassroom()">Add Room</button>
+  </div>
+</div>
+
+<!-- MODAL: Edit Classroom -->
+<div class="modal-bg" id="modalEditClassroom">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modalEditClassroom')">✕</button>
+    <div class="modal-title">Edit Room</div>
+    <input type="hidden" id="editRoomId"/>
+    <div class="fg"><label>Room Name</label><input type="text" id="editRoomName" placeholder="e.g. CSAMCR01, Lab 1"/></div>
+    <div class="fg"><label>Room Number</label><input type="text" id="editRoomNumber" placeholder="e.g. 01, 101"/></div>
+    <div class="fg"><label>Type</label>
+      <select id="editRoomType" onchange="toggleEditRoomTypeFields()">
+        <option value="Classroom">Classroom</option>
+        <option value="Lab">Lab</option>
+        <option value="Seminar Hall">Seminar Hall</option>
+        <option value="Lecture Hall">Lecture Hall</option>
+      </select>
+    </div>
+    <!-- Classroom fields -->
+    <div class="fg" id="editRoomDivWrap">
+      <label>Assign to Division</label>
+      <select id="editRoomDivision">
+        <option value="">No fixed division (shared)</option>
+        <option value="FY-A">FY – Division A</option>
+        <option value="FY-B">FY – Division B</option>
+        <option value="FY-C">FY – Division C</option>
+        <option value="SY-A">SY – Division A</option>
+        <option value="SY-B">SY – Division B</option>
+        <option value="SY-C">SY – Division C</option>
+        <option value="TY-A">TY – Division A</option>
+        <option value="TY-B">TY – Division B</option>
+        <option value="TY-C">TY – Division C</option>
+      </select>
+    </div>
+    <!-- Lab fields -->
+    <div id="editRoomLabWrap" style="display:none;">
+      <div class="fg">
+        <label>Assigned Subject (Lab)</label>
+        <select id="editRoomLabSubject">
+          <option value="">None — shared lab</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Assigned Division</label>
+        <select id="editRoomLabDivision">
+          <option value="">All divisions (shared)</option>
+          <option value="FY-A">FY – Division A</option>
+          <option value="FY-B">FY – Division B</option>
+          <option value="FY-C">FY – Division C</option>
+          <option value="SY-A">SY – Division A</option>
+          <option value="SY-B">SY – Division B</option>
+          <option value="SY-C">SY – Division C</option>
+          <option value="TY-A">TY – Division A</option>
+          <option value="TY-B">TY – Division B</option>
+          <option value="TY-C">TY – Division C</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="updateClassroom()">Update Room</button>
+  </div>
+</div>
+
+<!-- MODAL: Edit Faculty -->
+<div class="modal-bg" id="modalEditFaculty">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modalEditFaculty')">✕</button>
+    <div class="modal-title">Edit Faculty</div>
+    <div class="modal-sub">Update faculty details below</div>
+    <input type="hidden" id="editFacId"/>
+    <div class="fg"><label>Full Name</label><input type="text" id="editFacName" placeholder="Enter faculty name"/></div>
+    <div class="fg"><label>Email</label><input type="email" id="editFacEmail" placeholder="faculty@college.edu.in"/></div>
+    <div class="fg"><label>Year</label>
+      <select id="editFacYear">
+        <option value="">Select Year</option>
+        <option value="FY">FY — First Year</option>
+        <option value="SY">SY — Second Year</option>
+        <option value="TY">TY — Third Year</option>
+        <option value="TY-DS">TY-DS — Third Year (DS)</option>
+        <option value="LY">LY — Last Year</option>
+      </select>
+    </div>
+    <button class="btn-primary" onclick="updateFaculty()">Update Faculty</button>
+  </div>
+</div>
+
+<!-- MODAL: Edit Subject -->
+<div class="modal-bg" id="modalEditSubject">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modalEditSubject')">✕</button>
+    <div class="modal-title">Edit Subject</div>
+    <div class="modal-sub">Update subject details below</div>
+    <input type="hidden" id="editSubId"/>
+    <div class="fg"><label>Subject Name</label><input type="text" id="editSubName" placeholder="e.g. Data Structures"/></div>
+    <div class="fg"><label>Subject Code</label><input type="text" id="editSubCode" placeholder="e.g. CS301"/></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="fg"><label>Year</label>
+        <select id="editSubYear">
+          <option value="">Select Year</option>
+          <option>FY</option><option>SY</option><option>TY</option><option>TY-DS</option><option>LY</option>
+        </select>
+      </div>
+      <div class="fg"><label>Semester</label>
+        <select id="editSubSem">
+          <option value="">Select Sem</option>
+          <option>Semester 1</option><option>Semester 2</option>
+          <option>Semester 3</option><option>Semester 4</option>
+          <option>Semester 5</option><option>Semester 6</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg"><label>Grades Per Week</label>
+      <input type="number" id="editSubGrades" placeholder="e.g. 3" min="1" max="6"/>
+    </div>
+    <div class="fg"><label>Type</label>
+      <select id="editSubType">
+        <option>Lecture</option>
+        <option>Lab</option>
+        <option>Tutorial</option>
+      </select>
+    </div>
+    <div style="background:#EDE9FE;border-radius:10px;padding:10px 14px;font-size:12px;color:#5B21B6;margin-bottom:12px;">
+      💡 To assign faculty per division, open the subject from within a division and click <strong>Edit</strong>.
+    </div>
+    <button class="btn-primary" onclick="updateSubject()">Update Subject</button>
+  </div>
+</div>
+<div class="modal-bg" id="modalFaculty">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modalFaculty')">✕</button>
+    <div class="modal-title">Add Faculty</div>
+    <div class="modal-sub">Fill in the faculty details below</div>
+    <div class="fg"><label>Full Name</label><input type="text" id="facName" placeholder="Enter faculty name"/></div>
+    <div class="fg"><label>Email</label><input type="email" id="facEmail" placeholder="faculty@college.edu.in" required/></div>
+    <button class="btn-primary" onclick="addFaculty()">Add Faculty</button>
+  </div>
+</div>
+
+<!-- MODAL: Add Subject -->
+<div class="modal-bg" id="modalSubject">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modalSubject')">✕</button>
+    <div class="modal-title">Add Subject</div>
+    <div class="modal-sub">Fill in the subject details below</div>
+    <div class="fg"><label>Subject Name</label><input type="text" id="subName" placeholder="e.g. Data Structures"/></div>
+    <div class="fg"><label>Subject Code</label><input type="text" id="subCode" placeholder="e.g. CS301"/></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="fg"><label>Year</label>
+        <select id="subYear">
+          <option value="">Select Year</option>
+          <option>FY</option><option>SY</option><option>TY</option><option>TY-DS</option><option>LY</option>
+        </select>
+      </div>
+      <div class="fg"><label>Semester</label>
+        <select id="subSem">
+          <option value="">Select Sem</option>
+          <option>Semester 1</option><option>Semester 2</option>
+          <option>Semester 3</option><option>Semester 4</option>
+          <option>Semester 5</option><option>Semester 6</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg"><label>Grades Per Week (lectures)</label>
+      <input type="number" id="subGrades" placeholder="e.g. 3 (means 3 lectures/week)" min="1" max="6"/>
+    </div>
+    <div class="fg"><label>Type</label>
+      <select id="subType">
+        <option>Lecture</option>
+        <option>Lab</option>
+        <option>Tutorial</option>
+      </select>
+    </div>
+    <button class="btn-primary" onclick="addSubject()">Add Subject</button>
+  </div>
+</div><!-- end modalSubject -->
+
+<!-- MODAL: Assign Faculty to Division -->
+<div class="modal-bg" id="modalDivFaculty">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modalDivFaculty')">✕</button>
+    <div class="modal-title">Assign Faculty</div>
+    <div class="modal-sub" id="divFacultyModalSub">Assign faculty for this division</div>
+    <input type="hidden" id="divFacSubId"/>
+    <input type="hidden" id="divFacDiv"/>
+    <div class="fg"><label>Subject</label>
+      <input type="text" id="divFacSubName" readonly style="background:#F7F9FC;color:#6B7280;"/>
+    </div>
+    <div style="background:#F0F9FF;border-radius:12px;padding:14px;margin-bottom:16px;">
+      <div style="font-size:11px;color:#0284C7;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">👤 Select up to 3 Faculty — all names will appear in timetable</div>
+      <div class="fg" style="margin-bottom:10px;">
+        <label>Faculty 1</label>
+        <select id="divFacSelect1"><option value="">— No faculty —</option></select>
+      </div>
+      <div class="fg" style="margin-bottom:10px;">
+        <label>Faculty 2 <span style="color:#9CA3AF;font-size:10px;">(optional)</span></label>
+        <select id="divFacSelect2"><option value="">— No faculty —</option></select>
+      </div>
+      <div class="fg" style="margin-bottom:0;">
+        <label>Faculty 3 <span style="color:#9CA3AF;font-size:10px;">(optional)</span></label>
+        <select id="divFacSelect3"><option value="">— No faculty —</option></select>
+      </div>
+    </div>
+    <div id="divFacPreview" style="font-size:12px;color:#6B7280;margin-bottom:12px;min-height:18px;"></div>
+    <button class="btn-primary" onclick="saveDivFaculty()">Save Faculty Assignment</button>
+  </div>
+</div>
+
+<!-- ===== CHANGED TIMETABLE PAGE ===== -->
+
+<script>
+const API_ROOT = 'http://localhost:5000/api';
+
+// ========== AUTH CHECK ==========
+const token = localStorage.getItem('token');
+const role  = localStorage.getItem('role');
+const name  = localStorage.getItem('name') || 'Admin';
+const adminDepartment = localStorage.getItem('department') || '';
+if (!token || role !== 'Admin / HOD') {
+  // Redirect back to login — works for both file:// and http://localhost
+  const base = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
+  window.location.href = base + 'index.html';
+}
+
+// Set admin name
+document.getElementById('adminName').textContent = name;
+document.getElementById('adminAvatar').textContent = name.charAt(0).toUpperCase();
+
+// Date
+const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const now    = new Date();
+document.getElementById('adminDate').textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+
+// ========== DATA ==========
+let faculty    = JSON.parse(localStorage.getItem('ef_faculty')    || '[]');
+let subjects   = JSON.parse(localStorage.getItem('ef_subjects')   || '[]');
+let classrooms = JSON.parse(localStorage.getItem('ef_classrooms') || '[]');
+
+// ── MIGRATION: stamp any legacy subject/faculty (no dept) with the
+//    current HOD's department, then immediately persist so it only
+//    runs once per browser.
+(function migrateLegacyData() {
+  if (!adminDepartment) return;
+  let changed = false;
+
+  faculty = faculty.map(f => {
+    if (!f.dept) { changed = true; return { ...f, dept: adminDepartment }; }
+    return f;
+  });
+
+  subjects = subjects.map(s => {
+    if (!s.dept) { changed = true; return { ...s, dept: adminDepartment }; }
+    return s;
+  });
+
+  // Auto-assign year to faculty who have no year set
+  // Based on their subjects; if no subjects, default to SY
+  faculty = faculty.map(f => {
+    if (f.year) return f;
+    const mySubs = subjects.filter(s => s.faculty === f.name && s.year);
+    let assignYear = 'SY'; // default
+    if (mySubs.length > 0) {
+      const yearCount = {};
+      mySubs.forEach(s => { yearCount[s.year] = (yearCount[s.year] || 0) + 1; });
+      assignYear = Object.entries(yearCount).sort((a,b) => b[1]-a[1])[0][0];
+    }
+    changed = true;
+    return { ...f, year: assignYear };
+  });
+
+  if (changed) {
+    localStorage.setItem('ef_faculty',  JSON.stringify(faculty));
+    localStorage.setItem('ef_subjects', JSON.stringify(subjects));
+  }
+})();
+
+function saveData() {
+  localStorage.setItem('ef_faculty',    JSON.stringify(faculty));
+  localStorage.setItem('ef_subjects',   JSON.stringify(subjects));
+  localStorage.setItem('ef_classrooms', JSON.stringify(classrooms));
+}
+
+function getVisibleFaculty() {
+  if (!adminDepartment) return faculty;
+  return faculty.filter(f => (f.dept || '') === adminDepartment);
+}
+
+function getVisibleSubjects() {
+  if (!adminDepartment) return subjects;
+  return subjects.filter(s => (s.dept || '') === adminDepartment);
+}
+
+function syncFacultyDepartmentFields() {
+  const addDeptField = document.getElementById('facDept');
+  const editDeptField = document.getElementById('editFacDept');
+  if (addDeptField) addDeptField.value = adminDepartment;
+  if (editDeptField) editDeptField.value = adminDepartment;
+}
+
+function syncTimetableDepartmentField() {
+  const timetableDeptField = document.getElementById('ttDept');
+  if (!timetableDeptField) return;
+
+  if (adminDepartment) {
+    timetableDeptField.value = adminDepartment;
+    timetableDeptField.disabled = true;
+    timetableDeptField.setAttribute('title', 'Department is set from the logged-in admin account');
+  } else {
+    timetableDeptField.disabled = false;
+    timetableDeptField.removeAttribute('title');
+  }
+}
+
+// ========== PAGE NAVIGATION ==========
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+  const pageEl = document.getElementById('page-' + page);
+  if (pageEl) pageEl.classList.add('active');
+  // highlight the correct sidebar item
+  const navEl = document.querySelector(`.sb-item[onclick*="'${page}'"]`);
+  if (navEl) navEl.classList.add('active');
+  else if (typeof event !== 'undefined' && event && event.currentTarget) {
+    event.currentTarget.classList.add('active');
+  }
+  if (page === 'changelog') renderChangelog();
+  renderAll();
+}
+
+// ========== MODAL ==========
+function openModal(id) { document.getElementById(id).classList.add('open'); syncFacultyDepartmentFields(); }
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  if (id === 'modalFaculty') {
+    _addFacultyForYear = null;
+    const sub = document.querySelector('#modalFaculty .modal-sub');
+    if (sub) sub.innerHTML = 'Fill in the faculty details below';
+  }
+}
+
+function populateFacultySelect() {
+  // No longer used for Add Subject modal (faculty is now set per-division via Edit)
+}
+
+function formatFacultyName(name) {
+  return name.trim().replace(/\s+/g, ' ');
+}
+
+function normalizeFacultyName(name) {
+  return formatFacultyName(name).toLowerCase();
+}
+
+function normalizeSubjectText(value) {
+  return (value || '').trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
+function getSubjectDuplicateKey(subject) {
+  return [
+    normalizeSubjectText(subject.name),
+    normalizeSubjectText(subject.code),
+    normalizeSubjectText(subject.faculty),
+    normalizeSubjectText(subject.year),
+    normalizeSubjectText(subject.div),
+    normalizeSubjectText(subject.sem),
+    Number.parseInt(subject.grades, 10) || 0,
+    normalizeSubjectText(subject.type)
+  ].join('|');
+}
+
+function getSubjectIdentityKey(subject) {
+  return [
+    normalizeSubjectText(subject.name),
+    normalizeSubjectText(subject.code)
+  ].join('|');
+}
+
+function isDuplicateSubject(subject, excludeId = null) {
+  const duplicateKey = getSubjectDuplicateKey(subject);
+  return getVisibleSubjects().some(s => s.id !== excludeId && getSubjectDuplicateKey(s) === duplicateKey);
+}
+
+// Check if same subject is already assigned to this division (regardless of faculty)
+function isSubjectAlreadyInDiv(subject, excludeId = null) {
+  const name = normalizeSubjectText(subject.name);
+  const year = normalizeSubjectText(subject.year);
+  const div  = normalizeSubjectText(subject.div);
+  const sem  = normalizeSubjectText(subject.sem);
+  const type = normalizeSubjectText(subject.type);
+  if (!name || !year || !div) return false;
+  const existing = getVisibleSubjects().find(s =>
+    s.id !== excludeId &&
+    normalizeSubjectText(s.name) === name &&
+    normalizeSubjectText(s.year) === year &&
+    normalizeSubjectText(s.div)  === div  &&
+    normalizeSubjectText(s.sem)  === sem  &&
+    normalizeSubjectText(s.type) === type
+  );
+  return existing || null;
+}
+
+function dedupeSubjects() {
+  const seen = new Set();
+  let removedCount = 0;
+
+  subjects = subjects.filter(subject => {
+    const key = getSubjectDuplicateKey(subject);
+    if (seen.has(key)) {
+      removedCount += 1;
+      return false;
+    }
+    seen.add(key);
+    return true;
+  });
+
+  return removedCount;
+}
+
+function isDuplicateFacultyName(name, excludeId = null, year = null) {
+  const normalizedName = normalizeFacultyName(name);
+  return faculty.some(f =>
+    f.id !== excludeId &&
+    (!adminDepartment || (f.dept || '') === adminDepartment) &&
+    normalizeFacultyName(f.name) === normalizedName &&
+    (year === null || (f.year || '') === (year || ''))
+  );
+}
+
+// ========== ADD FACULTY ==========
+function addFaculty() {
+  const name  = formatFacultyName(document.getElementById('facName').value);
+  const dept  = adminDepartment;
+  const email = document.getElementById('facEmail').value.trim();
+  const year  = _addFacultyForYear || '';
+  if (!dept) { alert('Your department is missing. Please log in again.'); return; }
+  if (!name) { alert('Please enter faculty name!'); return; }
+  if (!email) { alert('⚠️ Please enter the faculty email.'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert('⚠️ Please enter a valid email address.'); return; }
+
+  // Duplicate check: same name + same year = error (only if year is set)
+  if (year) {
+    const dupInSameYear = faculty.find(f =>
+      (f.dept || '') === dept &&
+      normalizeFacultyName(f.name) === normalizeFacultyName(name) &&
+      (f.year || '') === year
+    );
+    if (dupInSameYear) {
+      alert(`⚠️ "${name}" is already added in ${year}. You can add the same faculty to a different year block.`);
+      return;
+    }
+  }
+
+  faculty.push({ id: Date.now(), name, dept, email, year, status: 'Active' });
+  saveData();
+  syncFacultyToBackend();
+  _addFacultyForYear = null;
+  renderAll(); closeModal('modalFaculty');
+  document.getElementById('facName').value = '';
+  document.getElementById('facEmail').value = '';
+}
+
+// ========== ADD SUBJECT ==========
+function addSubject() {
+  const name   = document.getElementById('subName').value.trim().replace(/\s+/g, ' ');
+  const code   = document.getElementById('subCode').value.trim().replace(/\s+/g, ' ');
+  const year   = document.getElementById('subYear').value;
+  const sem    = document.getElementById('subSem').value;
+  const grades = document.getElementById('subGrades').value;
+  const type   = document.getElementById('subType').value;
+  if (!name || !grades || !year) { alert('Please fill subject name, year and grades!'); return; }
+
+  // Check if subject already exists for this year (any division — all 3 share same base)
+  const alreadyExists = getVisibleSubjects().find(s =>
+    s.name.trim().toLowerCase() === name.toLowerCase() &&
+    s.year === year &&
+    (s.sem||'') === (sem||'') &&
+    s.type === type
+  );
+  if (alreadyExists) {
+    alert(`⚠️ "${name}" is already added for ${year} (${sem || 'no semester'}). It appears in all divisions.`);
+    return;
+  }
+
+  const baseId = Date.now();
+
+  const yearDivs = year === 'TY-DS'
+    ? ['A']
+    : ['A','B','C'];
+
+  yearDivs.forEach((div, i) => {
+    subjects.push({
+      id: baseId + i,
+      baseId: baseId,   // group key: all 3 share same baseId
+      name, code, year, div, sem,
+      grades: parseInt(grades, 10),
+      type,
+      faculty: '',      // assigned later per-division via Edit
+      dept: adminDepartment
+    });
+  });
+
+  saveData(); renderAll(); closeModal('modalSubject');
+  document.getElementById('subName').value   = '';
+  document.getElementById('subCode').value   = '';
+  document.getElementById('subGrades').value = '';
+  document.getElementById('subYear').value   = '';
+  document.getElementById('subSem').value    = '';
+}
+
+
+
+// ========== CLASSROOMS ==========
+
+function getVisibleClassrooms() {
+  if (!adminDepartment) return classrooms;
+  return classrooms.filter(r => !r.dept || r.dept === adminDepartment);
+}
+
+// ── Toggle fields based on room type (Add modal) ──
+function toggleRoomTypeFields() {
+  const type  = document.getElementById('roomType').value;
+  const isLab = type === 'Lab';
+  document.getElementById('roomDivWrap').style.display  = isLab ? 'none'  : 'block';
+  document.getElementById('roomLabWrap').style.display  = isLab ? 'block' : 'none';
+
+  if (isLab) {
+    // Populate lab subject dropdown from current subjects
+    const labSubEl = document.getElementById('roomLabSubject');
+    // Deduplicate by subject name (same subject exists for each division)
+    const uniqueLabSubs = [];
+    const seenNames = new Set();
+    getVisibleSubjects().filter(s => s.type === 'Lab').forEach(s => {
+      if (!seenNames.has(s.name)) { seenNames.add(s.name); uniqueLabSubs.push(s); }
+    });
+    labSubEl.innerHTML = '<option value="">Select subject — optional</option>' +
+      uniqueLabSubs.map(s => `<option value="${s.name}">${s.name}${s.code ? ' (' + s.code + ')' : ''}</option>`).join('');
+  }
+}
+
+// ── Toggle fields based on room type (Edit modal) ──
+function toggleEditRoomTypeFields() {
+  const type  = document.getElementById('editRoomType').value;
+  const isLab = type === 'Lab';
+  document.getElementById('editRoomDivWrap').style.display  = isLab ? 'none'  : 'block';
+  document.getElementById('editRoomLabWrap').style.display  = isLab ? 'block' : 'none';
+}
+
+// ── Check if a lab is already occupied at a time slot across saved timetables ──
+// Returns array of conflict descriptions
+function getLabOccupiedSlots(labName) {
+  const savedTTs = JSON.parse(localStorage.getItem('ef_timetables') || '[]');
+  const conflicts = [];
+  const roomKey   = labName.toLowerCase().trim();
+
+  savedTTs.forEach(tt => {
+    if (!tt.grid) return;
+    Object.entries(tt.grid).forEach(([day, slots]) => {
+      Object.entries(slots).forEach(([si, cell]) => {
+        if (cell && cell.lab && cell.labPart === 1 && cell.room &&
+            cell.room.toLowerCase().trim() === roomKey) {
+          const slot = (typeof SLOTS !== 'undefined' && SLOTS[si]) ? SLOTS[si].label : `Slot ${si}`;
+          conflicts.push(`${tt.year} Div ${tt.div} — ${cell.name} — ${day} ${slot}`);
+        }
+      });
+    });
+  });
+  return conflicts;
+}
+
+// ── Show lab occupied status when subject/division changes in Add modal ──
+function checkLabOccupied() {
+  const name      = document.getElementById('roomName').value.trim();
+  const occupiedEl = document.getElementById('roomLabOccupied');
+  if (!name) { occupiedEl.style.display = 'none'; return; }
+
+  const conflicts = getLabOccupiedSlots(name);
+  if (conflicts.length > 0) {
+    occupiedEl.innerHTML = '⚠️ <strong>This lab is already assigned in saved timetables:</strong><br>' +
+      conflicts.map(c => `• ${c}`).join('<br>');
+    occupiedEl.style.display = 'block';
+  } else {
+    occupiedEl.innerHTML = '✅ Lab is free — no conflicts in saved timetables.';
+    occupiedEl.style.display = 'block';
+    occupiedEl.style.background = '#D1FAE5';
+    occupiedEl.style.borderColor = '#6EE7B7';
+    occupiedEl.style.color = '#065F46';
+  }
+}
+
+function addClassroom() {
+  const name   = document.getElementById('roomName').value.trim();
+  const number = document.getElementById('roomNumber').value.trim();
+  const type   = document.getElementById('roomType').value;
+  const errEl  = document.getElementById('roomError');
+  errEl.style.display = 'none';
+
+  if (!name)   { errEl.textContent = 'Please enter a room name.';   errEl.style.display = 'block'; return; }
+  if (!number) { errEl.textContent = 'Please enter a room number.'; errEl.style.display = 'block'; return; }
+
+  const isLab    = type === 'Lab';
+  const division = isLab
+    ? document.getElementById('roomLabDivision').value
+    : document.getElementById('roomDivision').value;
+  const labSubject = isLab ? document.getElementById('roomLabSubject').value : '';
+
+  // Block only if BOTH room name AND room number are same but assigned to different division
+  const dupRoom = getVisibleClassrooms().find(r =>
+    r.name.trim().toLowerCase() === name.toLowerCase() &&
+    r.number.trim() === number &&
+    r.division && division && r.division !== division
+  );
+  if (dupRoom) {
+    errEl.textContent = `⚠️ "${name} ${number}" is already permanently booked for ${dupRoom.division}. It cannot be assigned to ${division}.`;
+    errEl.style.display = 'block';
+    return;
+  }
+
+  // Check if same division already has a classroom (for non-lab type)
+  if (!isLab && division) {
+    const divAlready = getVisibleClassrooms().find(r =>
+      r.type !== 'Lab' && r.division === division
+    );
+    if (divAlready) {
+      errEl.textContent = `⚠️ ${division} already has a classroom assigned ("${divAlready.name} ${divAlready.number}"). Delete it first before adding a new one.`;
+      errEl.style.display = 'block';
+      return;
+    }
+  }
+
+  const room = {
+    id: Date.now(),
+    name, number, type, division,
+    labSubject,  // subject code/name this lab is reserved for (empty = shared)
+    dept: adminDepartment || ''
+  };
+
+  classrooms.push(room);
+  saveData();
+  renderAll();
+  closeModal('modalClassroom');
+
+  // Clear form
+  document.getElementById('roomName').value = '';
+  document.getElementById('roomNumber').value = '';
+  document.getElementById('roomDivision').value = '';
+  document.getElementById('roomLabDivision').value = '';
+  document.getElementById('roomLabSubject').value = '';
+  document.getElementById('roomLabOccupied').style.display = 'none';
+}
+
+function editClassroom(id) {
+  const r = classrooms.find(r => r.id === id);
+  if (!r) return;
+  document.getElementById('editRoomId').value       = r.id;
+  document.getElementById('editRoomName').value     = r.name;
+  document.getElementById('editRoomNumber').value   = r.number;
+  document.getElementById('editRoomType').value     = r.type;
+
+  // Populate subject options for lab
+  const editLabSubEl = document.getElementById('editRoomLabSubject');
+  // Deduplicate lab subjects by name
+  const uniqueEditLabSubs = [];
+  const seenEditNames = new Set();
+  getVisibleSubjects().filter(s => s.type === 'Lab').forEach(s => {
+    if (!seenEditNames.has(s.name)) { seenEditNames.add(s.name); uniqueEditLabSubs.push(s); }
+  });
+  editLabSubEl.innerHTML = '<option value="">None — shared lab</option>' +
+    uniqueEditLabSubs.map(s =>
+      `<option value="${s.name}" ${s.name === (r.labSubject||'') ? 'selected' : ''}>${s.name}${s.code ? ' (' + s.code + ')' : ''}</option>`
+    ).join('');
+
+  if (r.type === 'Lab') {
+    document.getElementById('editRoomLabDivision').value = r.division || '';
+    document.getElementById('editRoomLabSubject').value  = r.labSubject || '';
+    document.getElementById('editRoomDivWrap').style.display  = 'none';
+    document.getElementById('editRoomLabWrap').style.display  = 'block';
+  } else {
+    document.getElementById('editRoomDivision').value = r.division || '';
+    document.getElementById('editRoomDivWrap').style.display  = 'block';
+    document.getElementById('editRoomLabWrap').style.display  = 'none';
+  }
+  openModal('modalEditClassroom');
+}
+
+function updateClassroom() {
+  const id = parseInt(document.getElementById('editRoomId').value);
+  const idx = classrooms.findIndex(r => r.id === id);
+  if (idx < 0) return;
+  const editType   = document.getElementById('editRoomType').value;
+  const editIsLab  = editType === 'Lab';
+  const editName   = document.getElementById('editRoomName').value.trim();
+  const editNumber = document.getElementById('editRoomNumber').value.trim();
+  const editDiv    = editIsLab ? document.getElementById('editRoomLabDivision').value : document.getElementById('editRoomDivision').value;
+
+  // Block only if BOTH room name AND room number are same but assigned to different division
+  const dupRoom = getVisibleClassrooms().find(r =>
+    r.id !== id &&
+    r.name.trim().toLowerCase() === editName.toLowerCase() &&
+    r.number.trim() === editNumber &&
+    r.division && editDiv && r.division !== editDiv
+  );
+  if (dupRoom) {
+    alert(`⚠️ "${editName} ${editNumber}" is already permanently booked for ${dupRoom.division}. It cannot be assigned to ${editDiv}.`);
+    return;
+  }
+
+  // Check if same division already has a classroom (non-lab)
+  if (!editIsLab && editDiv) {
+    const divAlready = getVisibleClassrooms().find(r =>
+      r.id !== id && r.type !== 'Lab' && r.division === editDiv
+    );
+    if (divAlready) {
+      alert(`⚠️ ${editDiv} already has a classroom ("${divAlready.name} ${divAlready.number}"). Remove it first.`);
+      return;
+    }
+  }
+
+  classrooms[idx] = {
+    ...classrooms[idx],
+    name:       editName,
+    number:     editNumber,
+    type:       editType,
+    division:   editDiv,
+    labSubject: editIsLab ? document.getElementById('editRoomLabSubject').value  : '',
+  };
+  saveData();
+  renderAll();
+  closeModal('modalEditClassroom');
+}
+
+function deleteClassroom(id) {
+  if (!confirm('Delete this room?')) return;
+  classrooms = classrooms.filter(r => r.id !== id);
+  saveData();
+  renderAll();
+}
+
+// ── Check lab occupancy from timetable list view ──
+function checkLabOccupiedInTable(labName) {
+  const resultEl = document.getElementById('labCheckResult');
+  const conflicts = getLabOccupiedSlots(labName);
+
+  if (conflicts.length === 0) {
+    resultEl.style.background   = '#D1FAE5';
+    resultEl.style.border       = '1px solid #6EE7B7';
+    resultEl.style.color        = '#065F46';
+    resultEl.innerHTML = `✅ <strong>${labName}</strong> is free — no conflicts in any saved timetable.`;
+  } else {
+    resultEl.style.background   = '#FEE2E2';
+    resultEl.style.border       = '1px solid #FECACA';
+    resultEl.style.color        = '#991B1B';
+    resultEl.innerHTML =
+      `⚠️ <strong>${labName}</strong> is already used in the following saved timetable slots:<br>` +
+      conflicts.map(c => `&nbsp;&nbsp;• ${c}`).join('<br>');
+  }
+  resultEl.style.display = 'block';
+  resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function renderClassrooms() {
+  const visible = getVisibleClassrooms();
+  const el = document.getElementById('countClassrooms');
+  if (el) el.textContent = visible.length;
+
+  const tbody = document.getElementById('classroomTableBody');
+  if (!tbody) return;
+
+  if (visible.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty"><div class="empty-icon">🏫</div><div class="empty-text">No classrooms added yet. Click "+ Add Room" to get started.</div></div></td></tr>`;
+    return;
+  }
+
+  const typePills = {
+    'Classroom':    'pill-blue',
+    'Lab':          'pill-yellow',
+    'Seminar Hall': 'pill-purple',
+    'Lecture Hall': 'pill-green'
+  };
+  const statusPills = {
+    'Available':          'pill-green',
+    'Under Maintenance':  'pill-red',
+    'Reserved':           'pill-purple'
+  };
+
+  tbody.innerHTML = visible.map((r, i) => {
+    const divLabel = r.division
+      ? `<span class="pill pill-purple">${r.division.replace('-', ' Div ')}</span>`
+      : `<span style="color:var(--gray);font-size:12px;">Shared / Lab</span>`;
+    return `
+    <tr>
+      <td>${i + 1}</td>
+      <td><strong>${r.name}</strong></td>
+      <td style="color:var(--gray);font-size:12px;">${r.number}</td>
+      <td><span class="pill ${typePills[r.type] || 'pill-blue'}">${r.type}</span></td>
+      <td>${r.type === 'Lab'
+        ? (r.labSubject
+            ? `<span class='pill pill-yellow'>${r.labSubject}</span>${r.division ? ' · ' + r.division.replace('-',' Div ') : ''}`
+            : `<span style='color:var(--gray);font-size:12px;'>Shared lab</span>`)
+        : divLabel}</td>
+      <td>
+        <button onclick="checkLabOccupiedInTable('${r.name}')" style="background:#FFF9E6;color:#92400E;border:none;padding:6px 14px;border-radius:100px;font-size:12px;cursor:pointer;margin-right:6px;font-weight:600;">Check</button>
+        <button onclick="editClassroom(${r.id})" style="background:#E0F4FF;color:#0284C7;border:none;padding:6px 14px;border-radius:100px;font-size:12px;cursor:pointer;margin-right:6px;font-weight:600;">Edit</button>
+        <button onclick="deleteClassroom(${r.id})" style="background:#FEE2E2;color:#991B1B;border:none;padding:6px 14px;border-radius:100px;font-size:12px;cursor:pointer;font-weight:600;">Delete</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ========== RENDER ALL ==========
+
+// ═══════════════════════════════════════════════════════════════
+// YEAR BLOCK HELPERS
+// ═══════════════════════════════════════════════════════════════
+const YEAR_CONFIG = [
+  { key:'FY',    label:'First Year',      bg:'#E0F4FF', color:'#0284C7', icon:'🎓' },
+  { key:'SY',    label:'Second Year',     bg:'#D1FAE5', color:'#065F46', icon:'📖' },
+  { key:'TY',    label:'Third Year',      bg:'#EDE9FE', color:'#5B21B6', icon:'🏆' },
+  { key:'TY-DS', label:'Third Year (DS)', bg:'#FFE8F0', color:'#BE185D', icon:'💻' },
+  { key:'LY',    label:'Last Year',       bg:'#FEF9C3', color:'#854D0E', icon:'🎯' },
+];
+const DIVS = ['A','B','C'];
+
+let activeFacultyYear = null;
+
+// ── FACULTY YEAR BLOCKS ──────────────────────────────────────
+function renderFacultyGrouped(visibleFaculty, visibleSubjects) {
+  const blocksHost = document.getElementById('facultyYearBlocks');
+  const detailHost = document.getElementById('facultyYearDetail');
+  if (!blocksHost) return;
+
+  // Count faculty strictly per year
+  const yearCounts = {};
+  YEAR_CONFIG.forEach(y => {
+    yearCounts[y.key] = visibleFaculty.filter(f => f.year === y.key).length;
+  });
+
+
+  blocksHost.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;">
+      ${YEAR_CONFIG.map(y => `
+        <div style="background:#fff;border:2px solid ${activeFacultyYear===y.key ? y.color : '#F0F0F0'};border-radius:20px;padding:28px 20px;transition:all 0.2s;text-align:center;">
+          <div onclick="openFacultyYear('${y.key}')" style="cursor:pointer;">
+            <div style="font-size:36px;margin-bottom:10px;">${y.icon}</div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:${y.color};">${y.key}</div>
+            <div style="font-size:13px;color:var(--gray);margin-top:4px;">${y.label}</div>
+            <div style="margin-top:12px;background:${y.bg};color:${y.color};border-radius:100px;padding:4px 14px;font-size:12px;font-weight:700;display:inline-block;">
+              ${yearCounts[y.key]} faculty
+            </div>
+          </div>
+          <button onclick="event.stopPropagation();openAddFacultyForYear('${y.key}')"
+            style="margin-top:14px;width:100%;background:${y.bg};color:${y.color};border:none;padding:8px 0;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;">
+            + Add Faculty
+          </button>
+        </div>`).join('')}
+    </div>
+  `;
+
+  // Add unassigned strip for legacy faculty with no year
+  const noYearFaculty = visibleFaculty.filter(f => !f.year);
+  if (noYearFaculty.length > 0) {
+    blocksHost.innerHTML += `
+      <div style="background:#FFF9E6;border:1.5px dashed #F59E0B;border-radius:16px;padding:14px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="font-size:24px;">⚠️</div>
+          <div>
+            <div style="font-weight:700;font-size:14px;color:#92400E;">${noYearFaculty.length} faculty not assigned to any year</div>
+            <div style="font-size:12px;color:#B45309;margin-top:2px;">Click Edit on each faculty below and set their Year to move them to the correct block.</div>
+          </div>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid #F0F0F0;border-radius:16px;padding:16px 20px;margin-bottom:20px;">
+        <table class="ef-table">
+          <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody>
+            ${noYearFaculty.map((f,i) => `<tr>
+              <td>${i+1}</td>
+              <td><strong>${f.name}</strong></td>
+              <td style="color:var(--gray);font-size:12px;">${f.email||'—'}</td>
+              <td><span class="pill pill-green">${f.status||'Active'}</span></td>
+              <td>
+                <button onclick="editFaculty(${f.id})" style="background:#E0F4FF;color:#0284C7;border:none;padding:6px 14px;border-radius:100px;font-size:12px;cursor:pointer;margin-right:6px;font-weight:600;">Edit & Assign Year</button>
+                <button onclick="deleteFaculty(${f.id})" style="background:#FEE2E2;color:#991B1B;border:none;padding:6px 14px;border-radius:100px;font-size:12px;cursor:pointer;font-weight:600;">Delete</button>
+              </td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`;
+  }
+
+  // Render detail if a year is active
+  if (activeFacultyYear) {
+    renderFacultyYearDetail(activeFacultyYear, visibleFaculty, visibleSubjects, detailHost);
+    detailHost.style.display = 'block';
+  } else {
+    detailHost.style.display = 'none';
+  }
+}
+
+let _addFacultyForYear = null;
+
+function openAddFacultyForYear(year) {
+  _addFacultyForYear = year;
+  openModal('modalFaculty');
+  const yc = YEAR_CONFIG.find(y => y.key === year);
+  const sub = document.querySelector('#modalFaculty .modal-sub');
+  if (sub && yc) {
+    sub.innerHTML = `Adding faculty for <strong style="color:${yc.color}">${year} — ${yc.label}</strong>`;
+  }
+}
+
+function openFacultyYear(year) {
+  activeFacultyYear = activeFacultyYear === year ? null : year;
+  const vf = getVisibleFaculty();
+  const vs = getVisibleSubjects();
+  renderFacultyGrouped(vf, vs);
+  if (activeFacultyYear) {
+    document.getElementById('facultyYearDetail').scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }
+}
+
+function renderFacultyYearDetail(year, visibleFaculty, visibleSubjects, host) {
+  const yc = YEAR_CONFIG.find(y => y.key === year);
+
+  // All faculty who teach in this year (any div)
+  // Strictly show only faculty assigned to this year
+  const yearFaculty = year === 'UNASSIGNED'
+    ? visibleFaculty.filter(f => !f.year)
+    : visibleFaculty.filter(f => f.year === year);
+
+  const bgColor    = yc ? yc.bg    : '#F3F4F6';
+  const textColor  = yc ? yc.color : '#6B7280';
+  const yearLabel  = yc ? yc.label : 'Unassigned';
+
+  let html = `
+    <div style="background:#fff;border:1px solid #F0F0F0;border-radius:20px;padding:24px;margin-bottom:24px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="background:${bgColor};color:${textColor};font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;padding:6px 20px;border-radius:100px;">${year}</div>
+          <div style="font-size:14px;color:var(--gray);">${yearLabel} &mdash; ${yearFaculty.length} faculty member${yearFaculty.length !== 1 ? 's' : ''}</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="openAddFacultyForYear(activeFacultyYear)"
+            style="background:${bgColor};color:${textColor};border:none;padding:8px 18px;border-radius:100px;font-size:12px;cursor:pointer;font-weight:700;">+ Add Faculty</button>
+          <button onclick="activeFacultyYear=null;renderFacultyGrouped(getVisibleFaculty(),getVisibleSubjects());"
+            style="background:#F4F4F4;border:none;padding:8px 16px;border-radius:100px;font-size:12px;cursor:pointer;font-weight:600;">&#x2715; Close</button>
+        </div>
+      </div>`;
+
+  if (yearFaculty.length === 0) {
+    html += `<div class="empty"><div class="empty-icon">&#x1F469;&#x200D;&#x1F3EB;</div><div class="empty-text">No faculty assigned to ${year} yet.</div></div>`;
+  } else {
+    html += `
+      <table class="ef-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Divisions</th>
+            <th>Subjects</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${yearFaculty.map((f, i) => {
+            const mySubs = year === 'UNASSIGNED'
+              ? visibleSubjects.filter(s => s.faculty === f.name)
+              : visibleSubjects.filter(s => s.faculty === f.name && s.year === year);
+            const divs = [...new Set(mySubs.map(s => s.div).filter(Boolean))].sort().join(', ') || '—';
+            const uniqueSubNames = [...new Set(mySubs.map(s => s.name).filter(Boolean))];
+            const subNames = uniqueSubNames.join(', ') || '—';
+            const subCount = uniqueSubNames.length;
+            return `<tr>
+              <td>${i + 1}</td>
+              <td><strong>${f.name}</strong></td>
+              <td style="color:var(--gray);font-size:12px;">${f.email || '—'}</td>
+              <td><span class="pill pill-blue">${divs}</span></td>
+              <td>
+                <span class="pill pill-purple">${subCount} subject${subCount !== 1 ? 's' : ''}</span>
+                <div style="font-size:11px;color:var(--gray);margin-top:4px;">${subNames}</div>
+              </td>
+              <td><span class="pill pill-green">${f.status || 'Active'}</span></td>
+              <td>
+                <button onclick="editFaculty(${f.id})" style="background:#E0F4FF;color:#0284C7;border:none;padding:6px 14px;border-radius:100px;font-size:12px;cursor:pointer;margin-right:6px;font-weight:600;">Edit</button>
+                <button onclick="deleteFaculty(${f.id})" style="background:#FEE2E2;color:#991B1B;border:none;padding:6px 14px;border-radius:100px;font-size:12px;cursor:pointer;font-weight:600;">Delete</button>
+              </td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>`;
+  }
+
+  html += `</div>`;
+  host.innerHTML = html;
+}
+
+// ── SUBJECTS — 3 LEVEL DRILL DOWN (Year → Div → Subjects) ───
+let activeSubjectYear = null;
+let activeSubjectDiv  = null;
+
+function renderSubjectsGrouped(visibleSubjects) {
+  const blocksHost = document.getElementById('subjectYearBlocks');
+  const detailHost = document.getElementById('subjectYearDetail');
+  if (!blocksHost) return;
+
+  // Count unique subjects per year (by baseId or id — one per group)
+  const yearCounts = {};
+  YEAR_CONFIG.forEach(y => {
+    const seen = new Set();
+    visibleSubjects.filter(s => s.year === y.key).forEach(s => {
+      const key = s.baseId || s.id;
+      seen.add(key);
+    });
+    yearCounts[y.key] = seen.size;
+  });
+
+  // ── Level 1: Year blocks ──
+  blocksHost.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;">
+      ${YEAR_CONFIG.map(y => `
+        <div onclick="openSubjectYear('${y.key}')"
+          style="background:#fff;border:2px solid ${activeSubjectYear===y.key ? y.color : '#F0F0F0'};border-radius:20px;padding:28px 20px;cursor:pointer;transition:all 0.2s;text-align:center;box-shadow:${activeSubjectYear===y.key?'0 8px 24px rgba(0,0,0,0.10)':'none'};">
+          <div style="font-size:36px;margin-bottom:10px;">${y.icon}</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:${y.color};">${y.key}</div>
+          <div style="font-size:13px;color:var(--gray);margin-top:4px;">${y.label}</div>
+          <div style="margin-top:12px;background:${y.bg};color:${y.color};border-radius:100px;padding:4px 14px;font-size:12px;font-weight:700;display:inline-block;">
+            ${yearCounts[y.key]} subject${yearCounts[y.key]!==1?'s':''}
+          </div>
+        </div>`).join('')}
+    </div>`;
+
+  if (!activeSubjectYear) { detailHost.style.display = 'none'; return; }
+
+  const yc = YEAR_CONFIG.find(y => y.key === activeSubjectYear);
+  const yearSubs = visibleSubjects.filter(s => s.year === activeSubjectYear);
+
+  // ── Level 2: Div blocks ──
+  const divCounts = {};
+  DIVS.forEach(d => {
+    const seen = new Set();
+    yearSubs.filter(s => s.div === d).forEach(s => seen.add(s.baseId || s.id));
+    divCounts[d] = seen.size;
+  });
+
+  let html = `
+    <div style="background:#fff;border:1px solid #F0F0F0;border-radius:20px;padding:24px;margin-bottom:20px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="background:${yc.bg};color:${yc.color};font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;padding:6px 20px;border-radius:100px;">${activeSubjectYear} — ${yc.label}</div>
+          <div style="font-size:13px;color:var(--gray);">Select a division</div>
+        </div>
+        <button onclick="activeSubjectYear=null;activeSubjectDiv=null;renderSubjectsGrouped(getVisibleSubjects());"
+          style="background:#F4F4F4;border:none;padding:8px 16px;border-radius:100px;font-size:12px;cursor:pointer;font-weight:600;">✕ Close</button>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:${activeSubjectDiv ? '24px' : '0'};">
+        ${DIVS.map(div => `
+          <div onclick="openSubjectDiv('${div}')"
+            style="border:2px solid ${activeSubjectDiv===div ? yc.color : '#F0F0F0'};border-radius:16px;padding:20px;cursor:pointer;text-align:center;transition:all 0.2s;background:${activeSubjectDiv===div ? yc.bg : '#FAFAFA'};box-shadow:${activeSubjectDiv===div?'0 4px 16px rgba(0,0,0,0.08)':'none'};">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;color:${yc.color};">DIV ${div}</div>
+            <div style="font-size:12px;color:var(--gray);margin-top:4px;">Division ${div}</div>
+            <div style="margin-top:10px;background:${yc.bg};color:${yc.color};border-radius:100px;padding:3px 12px;font-size:11px;font-weight:700;display:inline-block;">
+              ${divCounts[div]} subject${divCounts[div]!==1?'s':''}
+            </div>
+          </div>`).join('')}
+      </div>`;
+
+  // ── Level 3: Subject list for selected div ──
+  if (activeSubjectDiv) {
+    const divSubs = yearSubs.filter(s => s.div === activeSubjectDiv);
+    const lectures = divSubs.filter(s => s.type !== 'Lab');
+    const labs     = divSubs.filter(s => s.type === 'Lab');
+
+    html += `
+      <div style="border-top:2px solid ${yc.bg};padding-top:20px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+          <div style="background:${yc.bg};color:${yc.color};font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;padding:4px 16px;border-radius:100px;">${activeSubjectYear} — DIV ${activeSubjectDiv}</div>
+          <div style="font-size:13px;color:var(--gray);">${divSubs.length} subject${divSubs.length!==1?'s':''}</div>
+        </div>`;
+
+    if (divSubs.length === 0) {
+      html += `<div class="empty"><div class="empty-icon">📚</div><div class="empty-text">No subjects added for ${activeSubjectYear} Div ${activeSubjectDiv} yet.</div></div>`;
+    } else {
+      const renderRow = s => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:#F7F9FC;border-radius:12px;margin-bottom:10px;border-left:4px solid ${s.type==='Lab'?'#F59E0B':s.type==='Tutorial'?'#10B981':'#38BDF8'};">
+          <div style="flex:1;">
+            <div style="font-weight:700;font-size:14px;">${s.name} <span style="font-size:11px;color:var(--gray);font-weight:400;">${s.code?'('+s.code+')':''}</span></div>
+            <div style="font-size:12px;color:var(--gray);margin-top:3px;">
+              👤 <strong style="color:${s.faculty?'#0369a1':'#9CA3AF'};">${s.faculty||'No faculty assigned'}</strong>
+              &nbsp;·&nbsp; 📅 ${s.sem||'—'} &nbsp;·&nbsp; 🔢 ${s.grades} per week
+            </div>
+            <span style="margin-top:6px;display:inline-block;padding:3px 10px;border-radius:100px;font-size:10px;font-weight:700;background:${s.type==='Lab'?'#FEF9C3':s.type==='Tutorial'?'#D1FAE5':'#E0F4FF'};color:${s.type==='Lab'?'#854D0E':s.type==='Tutorial'?'#065F46':'#0284C7'};">${s.type}</span>
+          </div>
+          <div style="display:flex;gap:8px;flex-shrink:0;margin-left:16px;">
+            <button onclick="openDivFacultyModal(${s.id},'${s.div}')" style="background:#EDE9FE;color:#5B21B6;border:none;padding:8px 16px;border-radius:100px;font-size:12px;cursor:pointer;font-weight:600;">👤 Faculty</button>
+            <button onclick="editSubject(${s.id})" style="background:#E0F4FF;color:#0284C7;border:none;padding:8px 16px;border-radius:100px;font-size:12px;cursor:pointer;font-weight:600;">Edit</button>
+            <button onclick="deleteSubject(${s.id})" style="background:#FEE2E2;color:#991B1B;border:none;padding:8px 16px;border-radius:100px;font-size:12px;cursor:pointer;font-weight:600;">Delete</button>
+          </div>
+        </div>`;
+
+      if (lectures.length > 0) {
+        html += `<div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:8px;">📖 Lectures & Tutorials</div>`;
+        html += lectures.map(renderRow).join('');
+      }
+      if (labs.length > 0) {
+        html += `<div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9CA3AF;margin:${lectures.length?'16px':0} 0 8px;">🧪 Labs</div>`;
+        html += labs.map(renderRow).join('');
+      }
+    }
+    html += `</div>`;
+  }
+
+  html += `</div>`;
+  detailHost.innerHTML = html;
+  detailHost.style.display = 'block';
+}
+
+function openSubjectYear(year) {
+  if (activeSubjectYear === year) {
+    activeSubjectYear = null;
+    activeSubjectDiv  = null;
+  } else {
+    activeSubjectYear = year;
+    activeSubjectDiv  = null;
+  }
+  renderSubjectsGrouped(getVisibleSubjects());
+  if (activeSubjectYear) document.getElementById('subjectYearDetail').scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+function openSubjectDiv(div) {
+  activeSubjectDiv = activeSubjectDiv === div ? null : div;
+  renderSubjectsGrouped(getVisibleSubjects());
+  if (activeSubjectDiv) setTimeout(() => document.getElementById('subjectYearDetail').scrollIntoView({ behavior:'smooth', block:'end' }), 50);
+}
+
+function renderAll() {
+  const visibleFaculty = getVisibleFaculty();
+  const visibleSubjects = getVisibleSubjects();
+  const uniqueSubCount = new Set(visibleSubjects.map(s => s.baseId || s.id)).size;
+  document.getElementById('countFaculty').textContent   = visibleFaculty.length;
+  document.getElementById('countSubjects').textContent  = uniqueSubCount;
+  document.getElementById('countTimetables').textContent = JSON.parse(localStorage.getItem('ef_timetables') || '[]').length;
+  renderClassrooms();
+  renderChangelog();
+
+  // ── FACULTY GROUPED VIEW ──────────────────────────────────────
+  renderFacultyGrouped(visibleFaculty, visibleSubjects);
+
+  // ── SUBJECTS GROUPED VIEW ─────────────────────────────────────
+  renderSubjectsGrouped(visibleSubjects);
+
+  // dashboard recent tables
+  const dfb = document.getElementById('dashFacultyBody');
+  if (visibleFaculty.length === 0) {
+    dfb.innerHTML = `<tr><td colspan="3"><div class="empty"><div class="empty-icon">👩‍🏫</div><div class="empty-text">No faculty added yet</div></div></td></tr>`;
+  } else {
+    dfb.innerHTML = visibleFaculty.slice(0,4).map(f => `
+      <tr>
+        <td><strong>${f.name}</strong></td>
+        <td>${f.dept}</td>
+        <td><span class="pill pill-green">Active</span></td>
+      </tr>`).join('');
+  }
+
+  const dsb = document.getElementById('dashSubjectBody');
+  if (visibleSubjects.length === 0) {
+    dsb.innerHTML = `<tr><td colspan="3"><div class="empty"><div class="empty-icon">📚</div><div class="empty-text">No subjects added yet</div></div></td></tr>`;
+  } else {
+    dsb.innerHTML = visibleSubjects.slice(0,4).map(s => `
+      <tr>
+        <td><strong>${s.name}</strong></td>
+        <td>${s.faculty || '—'}</td>
+        <td><span class="pill pill-purple">${s.grades}/wk</span></td>
+      </tr>`).join('');
+  }
+}
+
+// ========== EDIT FACULTY ==========
+function editFaculty(id) {
+  const f = faculty.find(f => f.id === id);
+  if (!f) return;
+  document.getElementById('editFacId').value    = f.id;
+  document.getElementById('editFacName').value  = f.name;
+  document.getElementById('editFacEmail').value = f.email || '';
+  document.getElementById('editFacYear').value  = f.year || '';
+  openModal('modalEditFaculty');
+}
+function updateFaculty() {
+  const id   = parseInt(document.getElementById('editFacId').value);
+  const name = formatFacultyName(document.getElementById('editFacName').value);
+  const dept = adminDepartment;
+  const email= document.getElementById('editFacEmail').value.trim();
+  const year = document.getElementById('editFacYear').value;
+  if (!dept) { alert('Your department is missing. Please log in again.'); return; }
+  if (!name) { alert('Please enter faculty name!'); return; }
+  // Duplicate: same name + same year (excluding self)
+  if (year) {
+    const dup = faculty.find(f =>
+      f.id !== id &&
+      (f.dept||'') === dept &&
+      normalizeFacultyName(f.name) === normalizeFacultyName(name) &&
+      (f.year||'') === year
+    );
+    if (dup) {
+      alert(`⚠️ "${name}" is already added in ${year}. Same faculty can be in a different year.`);
+      return;
+    }
+  }
+  const idx = faculty.findIndex(f => f.id === id);
+  if (idx !== -1) {
+    const previousName = faculty[idx].name;
+    faculty[idx] = { ...faculty[idx], name, dept, email, year };
+    if (previousName !== name) {
+      subjects = subjects.map(s =>
+        s.faculty === previousName ? { ...s, faculty: name } : s
+      );
+    }
+  }
+  saveData(); renderAll(); closeModal('modalEditFaculty');
+}
+function deleteFaculty(id) {
+  if (!confirm('Are you sure you want to delete this faculty?')) return;
+  faculty = faculty.filter(f => f.id !== id);
+  saveData(); renderAll();
+}
+
+// ========== EDIT SUBJECT (year-level — name/code/sem/grades/type only) ==========
+function editSubject(id) {
+  const s = subjects.find(s => s.id === id);
+  if (!s) return;
+  document.getElementById('editSubId').value     = s.id;
+  document.getElementById('editSubName').value   = s.name;
+  document.getElementById('editSubCode').value   = s.code || '';
+  document.getElementById('editSubGrades').value = s.grades;
+  document.getElementById('editSubType').value   = s.type;
+  document.getElementById('editSubYear').value   = s.year || '';
+  document.getElementById('editSubSem').value    = s.sem || '';
+  openModal('modalEditSubject');
+}
+function updateSubject() {
+  const id     = parseInt(document.getElementById('editSubId').value);
+  const name   = document.getElementById('editSubName').value.trim().replace(/\s+/g, ' ');
+  const code   = document.getElementById('editSubCode').value.trim().replace(/\s+/g, ' ');
+  const year   = document.getElementById('editSubYear').value;
+  const sem    = document.getElementById('editSubSem').value;
+  const grades = parseInt(document.getElementById('editSubGrades').value);
+  const type   = document.getElementById('editSubType').value;
+  if (!name || !grades) { alert('Please fill all fields!'); return; }
+
+  // Find the record to get its baseId, then update all records in the same base group
+  const target = subjects.find(s => s.id === id);
+  if (!target) return;
+  const bid = target.baseId || id;
+
+  subjects = subjects.map(s => {
+    if (s.id === id || (s.baseId && s.baseId === bid)) {
+      return { ...s, name, code, year, sem, grades, type };
+    }
+    return s;
+  });
+  saveData(); renderAll(); closeModal('modalEditSubject');
+}
+function deleteSubject(id) {
+  if (!confirm('Are you sure you want to delete this subject? It will be removed from all divisions.')) return;
+  const target = subjects.find(s => s.id === id);
+  if (!target) return;
+  const bid = target.baseId || id;
+  // Remove from all divisions in the same group
+  subjects = subjects.filter(s => s.id !== id && !(s.baseId && s.baseId === bid));
+  saveData(); renderAll();
+}
+
+// ========== ASSIGN FACULTY PER DIVISION ==========
+function openDivFacultyModal(subId, div) {
+  const s = subjects.find(s => s.id === subId);
+  if (!s) return;
+  const yc = YEAR_CONFIG.find(y => y.key === s.year);
+  document.getElementById('divFacSubId').value = subId;
+  document.getElementById('divFacDiv').value   = div;
+  document.getElementById('divFacSubName').value = s.name + (s.code ? ' (' + s.code + ')' : '');
+  document.getElementById('divFacultyModalSub').innerHTML =
+    `Assigning faculty for <strong style="color:${yc ? yc.color : '#5B21B6'};">${s.year} — Div ${div}</strong>`;
+
+  // Parse existing faculty string like "AK/SDJ/MMG" into array
+  const existing = (s.faculty || '').split('/').map(x => x.trim()).filter(Boolean);
+
+  const yearFacultyList = getVisibleFaculty().filter(f => (f.year || '') === s.year);
+
+  function buildOptions(selEl, selectedName) {
+    selEl.innerHTML = '<option value="">— No faculty —</option>';
+    if (yearFacultyList.length === 0) {
+      const opt = document.createElement('option');
+      opt.disabled = true;
+      opt.textContent = '— No faculty added for ' + s.year + ' yet —';
+      selEl.appendChild(opt);
+    } else {
+      yearFacultyList.forEach(f => {
+        const opt = document.createElement('option');
+        opt.value = f.name;
+        opt.textContent = f.name;
+        if (f.name === selectedName) opt.selected = true;
+        selEl.appendChild(opt);
+      });
+    }
+  }
+
+  buildOptions(document.getElementById('divFacSelect1'), existing[0] || '');
+  buildOptions(document.getElementById('divFacSelect2'), existing[1] || '');
+  buildOptions(document.getElementById('divFacSelect3'), existing[2] || '');
+
+  // Live preview
+  function updatePreview() {
+    const v1 = document.getElementById('divFacSelect1').value;
+    const v2 = document.getElementById('divFacSelect2').value;
+    const v3 = document.getElementById('divFacSelect3').value;
+    const names = [v1, v2, v3].filter(Boolean);
+    document.getElementById('divFacPreview').innerHTML = names.length
+      ? `Will show as: <strong style="color:#0A0A0A;">(${names.join('/')})</strong>`
+      : '';
+  }
+  document.getElementById('divFacSelect1').onchange = updatePreview;
+  document.getElementById('divFacSelect2').onchange = updatePreview;
+  document.getElementById('divFacSelect3').onchange = updatePreview;
+  updatePreview();
+
+  openModal('modalDivFaculty');
+}
+
+function saveDivFaculty() {
+  const subId = parseInt(document.getElementById('divFacSubId').value);
+  const div   = document.getElementById('divFacDiv').value;
+  const v1    = document.getElementById('divFacSelect1').value;
+  const v2    = document.getElementById('divFacSelect2').value;
+  const v3    = document.getElementById('divFacSelect3').value;
+  const fac   = [v1, v2, v3].filter(Boolean).join('/');
+  const idx   = subjects.findIndex(s => s.id === subId && s.div === div);
+  if (idx === -1) return;
+  subjects[idx] = { ...subjects[idx], faculty: fac };
+  saveData(); renderAll(); closeModal('modalDivFaculty');
+}
+
+// ========== TIMETABLE GENERATOR ==========
+const DAYS = ['Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+// SLOTS is dynamic — rebuilt each time admin sets timing
+let SLOTS = [
+  { label:'9:15 – 10:05',  type:'lec',   period:'morning' },
+  { label:'10:05 – 10:55', type:'lec',   period:'morning' },
+  { label:'10:55 – 11:15', type:'break', name:'Break' },
+  { label:'11:15 – 12:05', type:'lec',   period:'morning' },
+  { label:'12:05 – 12:55', type:'lec',   period:'morning' },
+  { label:'12:55 – 1:45',  type:'lunch', name:'Lunch Break' },
+  { label:'1:45 – 2:35',   type:'lec',   period:'afternoon' },
+  { label:'2:35 – 3:25',   type:'lec',   period:'afternoon' },
+  { label:'3:25 – 4:15',   type:'lec',   period:'afternoon' },
+  { label:'4:15 – 5:00',   type:'lec',  period:'afternoon', name:'B.Tech Hons' },
+];
+
+// ── TIMING HELPERS ────────────────────────────────────────────
+function minsToTime(totalMins) {
+  // totalMins from midnight
+  const h = Math.floor(totalMins / 60);
+  const m = totalMins % 60;
+  const hh = h > 12 ? h - 12 : h;
+  const mm = String(m).padStart(2, '0');
+  return `${hh}:${mm}`;
+}
+
+function timeToMins(timeStr) {
+  // "9:15" → 555
+  const [h, m] = timeStr.split(':').map(Number);
+  return h * 60 + m;
+}
+
+function buildSlotsFromTiming(lecMin, labMin, shortMin, longMin) {
+  const START = timeToMins('9:15');
+  const END   = timeToMins('17:00'); // 5:00 PM
+  const HONS_MIN = 45; // B.Tech Hons always last 45 min
+
+  const slots = [];
+  let cur = START;
+  let breaksDone = 0; // 0 = short break not yet added, 1 = long break not yet added, 2 = no more breaks
+  let lecInGroup = 0;
+  let period = 'morning';
+
+  while (true) {
+    const remaining = END - cur - HONS_MIN;
+    if (remaining < lecMin) break;
+
+    // Place a lecture
+    const startLabel = minsToTime(cur);
+    const endLabel   = minsToTime(cur + lecMin);
+    slots.push({ label: `${startLabel} – ${endLabel}`, type: 'lec', period });
+    cur += lecMin;
+    lecInGroup++;
+
+    // After every 2 lectures, add next break (if not done yet)
+    if (lecInGroup === 2 && breaksDone < 2) {
+      lecInGroup = 0;
+      const breakRemaining = END - cur - HONS_MIN;
+      if (breakRemaining <= 0) break;
+
+      if (breaksDone === 0) {
+        // Short break
+        slots.push({ label: `${minsToTime(cur)} – ${minsToTime(cur + shortMin)}`, type: 'break', name: 'Break' });
+        cur += shortMin;
+        breaksDone = 1;
+      } else if (breaksDone === 1) {
+        // Long break
+        slots.push({ label: `${minsToTime(cur)} – ${minsToTime(cur + longMin)}`, type: 'lunch', name: 'Lunch Break' });
+        cur += longMin;
+        period = 'afternoon';
+        breaksDone = 2;
+      }
+    }
+  }
+
+  // B.Tech Hons — last slot, regular lecture slot
+  slots.push({ label: `${minsToTime(cur)} – ${minsToTime(cur + HONS_MIN)}`, type: 'lec', period: 'afternoon', name: 'B.Tech Hons' });
+
+  return slots;
+}
+
+function previewTiming() {
+  const lecMin   = parseInt(document.getElementById('ttLecMin').value);
+  const labMin   = parseInt(document.getElementById('ttLabMin').value);
+  const shortMin = parseInt(document.getElementById('ttShortBreak').value);
+  const longMin  = parseInt(document.getElementById('ttLongBreak').value);
+
+  if (!lecMin || !labMin || !shortMin || !longMin) {
+    alert('Please fill all timing fields!'); return;
+  }
+  if (labMin < lecMin) {
+    alert('Lab duration must be >= Lecture duration!'); return;
+  }
+
+  const slots = buildSlotsFromTiming(lecMin, labMin, shortMin, longMin);
+
+  const colors = {
+    lec:   { bg:'#E0F4FF', color:'#0284C7' },
+    break: { bg:'#FEF9C3', color:'#854D0E' },
+    lunch: { bg:'#FEE2E2', color:'#991B1B' },
+  };
+
+  const lecCount = slots.filter(s => s.type === 'lec').length;
+
+  document.getElementById('ttTimingSlotList').innerHTML = slots.map((s, i) => {
+    const c = colors[s.type] || colors.lec;
+    const label = s.type === 'break' ? 'Short Break'
+                : s.type === 'lunch' ? 'Long Break'
+                : s.name === 'B.Tech Hons' ? 'B.Tech Hons'
+                : 'Lecture';
+    return `<div style="background:${c.bg};color:${c.color};border-radius:10px;padding:8px 14px;font-size:12px;font-weight:600;">
+      <div style="font-size:10px;opacity:0.7;">${label}</div>
+      <div>${s.label}</div>
+    </div>`;
+  }).join('') + `<div style="width:100%;margin-top:8px;font-size:12px;color:#6B7280;">
+    Total: <strong>${lecCount} lecture slots</strong> (incl. B.Tech Hons) · College: 9:15 – 5:00
+  </div>`;
+
+  document.getElementById('ttTimingPreview').style.display = 'block';
+}
+
+function confirmTiming() {
+  const lecMin   = parseInt(document.getElementById('ttLecMin').value);
+  const labMin   = parseInt(document.getElementById('ttLabMin').value);
+  const shortMin = parseInt(document.getElementById('ttShortBreak').value);
+  const longMin  = parseInt(document.getElementById('ttLongBreak').value);
+
+  if (!lecMin || !labMin || !shortMin || !longMin) {
+    alert('Please fill all timing fields!'); return;
+  }
+
+  // Build and apply SLOTS globally
+  SLOTS = buildSlotsFromTiming(lecMin, labMin, shortMin, longMin);
+
+  // Show Step 1
+  document.getElementById('ttTiming').style.display = 'none';
+  document.getElementById('ttSetup').style.display  = 'block';
+}
+const CELL_COLORS = ['#E0F4FF','#FFB3C6','#B5EAD7','#FFF176','#C5B4E3','#FFDAB9','#D1FAE5','#FEE2E2'];
+const COLLEGE_NAME = "K.I.T's College of Engineering (Autonomous), Kolhapur";
+const COLLEGE_TAGLINE = 'Department Timetable';
+const COLLEGE_LOGO_TEXT = 'EF';
+
+let ttSelectedSubjects = [];
+
+function normalizeFacultyKey(name) {
+  return (name || '').trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+function getTimetableIdentity(tt) {
+  return `${tt.year || ''}|${tt.div || ''}|${tt.sem || ''}|${tt.dept || ''}`;
+}
+
+function getTimetableHeaderMeta(tt) {
+  const activeDept = tt.dept || adminDepartment || 'Department';
+  return `${activeDept} | ${tt.year || ''} - Div ${tt.div || ''} | ${tt.sem || ''}`;
+}
+
+function blendHexWithWhite(hex, factor) {
+  const safeHex = (hex || '').replace('#', '');
+  if (!/^[0-9a-fA-F]{6}$/.test(safeHex)) return hex || '#FFFFFF';
+  const r = parseInt(safeHex.slice(0, 2), 16);
+  const g = parseInt(safeHex.slice(2, 4), 16);
+  const b = parseInt(safeHex.slice(4, 6), 16);
+  const nr = Math.round(r + (255 - r) * factor);
+  const ng = Math.round(g + (255 - g) * factor);
+  const nb = Math.round(b + (255 - b) * factor);
+  const toHex = n => n.toString(16).padStart(2, '0');
+  return `#${toHex(nr)}${toHex(ng)}${toHex(nb)}`;
+}
+
+function buildTimetableTableHtml(grid, options = {}) {
+  const colorFade  = typeof options.colorFade === 'number' ? options.colorFade : 0.45;
+  const printMode  = !!options.printMode;
+  const emptyCellBg = printMode ? '#fff' : blendHexWithWhite('#EAF2FF', 0.7);
+  const breakCellBg = printMode ? '#f0f0f0' : blendHexWithWhite('#E5E7EB', 0.3);
+  const border     = '1px solid #000';
+
+  let html = `<table style="width:100%;border-collapse:collapse;font-size:${printMode?'11px':'12px'};${printMode?'':'min-width:780px;'}table-layout:fixed;border:2px solid #000;">
+    <thead>
+      <tr>
+        <th style="background:${printMode?'#fff':'#0A0A0A'};color:${printMode?'#000':'#fff'};padding:${printMode?'6px 8px':'12px 10px'};text-align:center;font-size:11px;letter-spacing:1px;min-width:${printMode?'90px':'130px'};border:${border};">Time</th>
+        ${DAYS.map(d => `<th style="background:${printMode?'#fff':'#0A0A0A'};color:${printMode?'#000':'#fff'};padding:${printMode?'6px 4px':'12px 8px'};text-align:center;font-size:11px;letter-spacing:1px;border:${border};">${d}</th>`).join('')}
+      </tr>
+    </thead>
+    <tbody>`;
+
+  SLOTS.forEach((slot, si) => {
+    if (slot.type === 'break' || slot.type === 'lunch') {
+      html += `<tr>
+        <td style="padding:${printMode?'4px 6px':'10px 12px'};background:${breakCellBg};font-size:10px;color:#000;font-weight:bold;letter-spacing:1px;border:${border};text-align:center;">${slot.label}</td>
+        <td colspan="${DAYS.length}" style="background:${breakCellBg};text-align:center;font-size:${printMode?'10px':'11px'};color:#000;font-weight:bold;letter-spacing:2px;text-transform:uppercase;border:${border};">${slot.name}</td>
+      </tr>`;
+      return;
+    }
+
+    html += `<tr>
+      <td style="padding:${printMode?'4px 6px':'10px 8px'};font-size:10px;color:#000;${printMode?'':'font-family:\'Space Mono\',monospace;'}white-space:nowrap;border:${border};text-align:center;font-weight:bold;">${slot.label}</td>
+      ${DAYS.map(day => {
+        const cell = grid[day][si];
+        if (!cell) return `<td style="border:${border};padding:4px;min-width:${printMode?'80px':'110px'};height:${printMode?'48px':'68px'};background:${emptyCellBg};"></td>`;
+        if (cell.lab && cell.labPart === 2) return '';
+
+        const bg = printMode ? '#fff' : blendHexWithWhite(cell.color, colorFade);
+        const cellBorder = printMode ? '' : `border:1px solid rgba(0,0,0,0.14);`;
+
+        if (cell.lab && cell.labPart === 1) {
+          return `<td rowspan="2" style="border:${border};padding:${printMode?'4px':'6px'};vertical-align:middle;min-width:${printMode?'80px':'110px'};background:#fff;">
+            <div style="background:${bg};border-radius:${printMode?'0':'8px'};padding:${printMode?'4px':'8px'};height:100%;min-height:${printMode?'80px':'120px'};display:flex;flex-direction:column;justify-content:center;gap:3px;${cellBorder}">
+              <div style="font-weight:bold;font-size:${printMode?'10px':'12px'};color:#000;line-height:1.2;">${cell.name}</div>
+              <div style="font-size:9px;color:#222;">(${cell.assignedFaculty || '-'})</div>
+              ${cell.room ? `<div style="font-size:9px;color:${printMode?'#000':'#0369a1'};font-weight:bold;">${cell.room}</div>` : ''}
+              <div style="font-size:9px;color:#000;font-weight:bold;margin-top:2px;">Lab ${printMode?'(Double Slot)':'(DOUBLE SLOT)'}</div>
+            </div>
+          </td>`;
+        }
+
+        return `<td style="border:${border};padding:${printMode?'4px':'6px'};vertical-align:middle;min-width:${printMode?'80px':'110px'};height:${printMode?'58px':'68px'};background:#fff;">
+          <div style="background:${bg};border-radius:${printMode?'0':'8px'};padding:${printMode?'4px':'8px'};line-height:1.4;${cellBorder}height:100%;display:flex;flex-direction:column;justify-content:center;gap:2px;">
+            <div style="font-weight:bold;font-size:${printMode?'10px':'12px'};color:#000;">${cell.name}</div>
+            <div style="font-size:9px;color:#222;">(${cell.assignedFaculty || '-'})</div>
+            ${cell.room ? `<div style="font-size:9px;color:${printMode?'#000':'#0369a1'};font-weight:bold;">${cell.room}</div>` : ''}
+          </div>
+        </td>`;
+      }).join('')}
+    </tr>`;
+  });
+
+  html += '</tbody></table>';
+  return html;
+}
+
+function buildTimetableLayoutHtml(tt, options = {}) {
+  const dept     = tt.dept || adminDepartment || 'Department';
+  const year     = tt.year || '';
+  const div      = tt.div  || '';
+  const sem      = tt.sem  || '';
+  // Academic year: derive from current year
+  const now      = new Date();
+  const yr       = now.getFullYear();
+  const acYear   = now.getMonth() >= 6 ? `${yr}-${String(yr+1).slice(2)}` : `${yr-1}-${String(yr).slice(2)}`;
+  const divLabel = `${year} ${dept.replace('CSE - ','').replace('CSE-','')} - Div ${div}`;
+
+  return `
+    <div class="tt-print-layout" style="font-family:'Times New Roman',serif;background:#fff;border:2px solid #000;width:100%;box-sizing:border-box;">
+
+      <!-- ── HEADER ── -->
+      <div style="border-bottom:2px solid #000;padding:10px 14px;text-align:center;">
+        <div style="font-size:14px;font-weight:bold;line-height:1.6;">${COLLEGE_NAME}</div>
+        <div style="font-size:12px;font-weight:bold;">Department of ${dept}</div>
+        <div style="font-size:12px;font-weight:bold;">Time Table A.Y. ${acYear}</div>
+      </div>
+
+      <!-- ── CLASS TITLE BAR ── -->
+      <div style="border-bottom:2px solid #000;padding:6px 14px;text-align:center;font-size:13px;font-weight:bold;letter-spacing:0.5px;">
+        ${divLabel}
+      </div>
+
+      <!-- ── TIMETABLE GRID ── -->
+      <div style="overflow-x:auto;">
+        ${buildTimetableTableHtml(tt.grid, options)}
+      </div>
+
+
+
+    </div>
+  `;
+}
+
+function renderTimetable(tt) {
+  document.getElementById('ttResultTitle').textContent = `${tt.year} - Div ${tt.div} Timetable`;
+  document.getElementById('ttResultSub').textContent = `${tt.sem} | ${tt.dept}`;
+  document.getElementById('ttGridWrap').innerHTML = buildTimetableLayoutHtml(tt);
+}
+
+function showTimetableWarning(message) {
+  const el = document.getElementById('ttWarning');
+  if (!el) return;
+  if (!message) {
+    el.style.display = 'none';
+    el.innerHTML = '';
+    return;
+  }
+  el.innerHTML = message;
+  el.style.display = 'block';
+}
+
+function showGenerator() {
+  showPage('timetables');
+  syncTimetableDepartmentField();
+  document.getElementById('ttTiming').style.display = 'block';
+  document.getElementById('ttSetup').style.display  = 'none';
+  document.getElementById('ttAssign').style.display = 'none';
+  document.getElementById('ttResult').style.display = 'none';
+  document.getElementById('ttTimingPreview').style.display = 'none';
+}
+
+function updateTTDivisions() {
+  const year = document.getElementById('ttYear').value;
+  const divSel = document.getElementById('ttDiv');
+
+  // TY-DS has only division A
+  const divs = (year === 'TY-DS') ? ['A'] : ['A', 'B', 'C'];
+
+  divSel.innerHTML = '<option value="">Select Division</option>' +
+    divs.map(d => `<option>${d}</option>`).join('');
+
+  // If only 1 division, auto-select it
+  if (divs.length === 1) divSel.value = divs[0];
+}
+
+function loadSubjectsForTT() {
+  const year = document.getElementById('ttYear').value;
+  const div  = document.getElementById('ttDiv').value;
+  const sem  = document.getElementById('ttSem').value;
+  const dept = adminDepartment || document.getElementById('ttDept').value;
+  if (!year || !div || !sem || !dept) { alert('Please fill all fields!'); return; }
+
+  // filter subjects matching this div/year/sem and department
+  const filtered = getVisibleSubjects().filter(s =>
+    (!s.year || s.year === year) &&
+    (!s.div  || s.div  === div)  &&
+    (!s.sem  || s.sem  === sem)
+  );
+
+  const list = document.getElementById('ttSubjectList');
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="empty"><div class="empty-icon">📚</div><div class="empty-text">No subjects found for ${year} - Div ${div} - ${sem}. Please add subjects with matching Year, Division and Semester.</div></div>`;
+    document.getElementById('ttAssign').style.display = 'block';
+    return;
+  }
+
+  // Build room options based on subject type
+  const allRooms = getVisibleClassrooms();
+  const classroomOpts = allRooms.filter(r => r.type === 'Classroom' || r.type === 'Lecture Hall' || r.type === 'Seminar Hall');
+  const labOpts       = allRooms.filter(r => r.type === 'Lab');
+
+  // Find if this division has a permanently assigned classroom
+  const divKey = year + '-' + div; // e.g. "SY-B"
+  const permanentRoom = classroomOpts.find(r => r.division === divKey);
+
+  // Find which labs are already permanently assigned to subjects (across all saved timetables)
+  // Rule: same subject code → same lab always
+  const savedTTs = JSON.parse(localStorage.getItem('ef_timetables') || '[]');
+  const subjectLabMap = {}; // subjectCode -> labName
+  savedTTs.forEach(tt => {
+    if (!tt.grid) return;
+    Object.values(tt.grid).forEach(daySlots => {
+      Object.values(daySlots).forEach(cell => {
+        if (cell && cell.lab && cell.labPart === 1 && cell.room && cell.code) {
+          subjectLabMap[cell.code] = cell.room;
+        }
+      });
+    });
+  });
+
+  list.innerHTML = filtered.map((s,i) => {
+    const isLab   = s.type === 'Lab';
+    const rooms   = isLab ? labOpts : classroomOpts;
+
+    // Auto-select room:
+    // Lectures → permanent classroom for this division
+    // Labs     → 1) room configured with labSubject matching this subject
+    //            2) previously used lab from saved timetables
+    let autoRoom = '';
+    if (!isLab && permanentRoom) {
+      autoRoom = permanentRoom.name + ' (' + permanentRoom.number + ')';
+    } else if (isLab) {
+      // Check if any lab room is specifically assigned to this subject
+      const subjectName = (s.name || '').trim().toLowerCase();
+      const configuredLab = labOpts.find(r =>
+        r.labSubject && r.labSubject.trim().toLowerCase() === subjectName
+      );
+      if (configuredLab) {
+        autoRoom = configuredLab.name + ' (' + configuredLab.number + ')';
+      } else if (s.code && subjectLabMap[s.code]) {
+        // Fall back to previously used lab from saved timetables
+        autoRoom = subjectLabMap[s.code];
+      }
+    }
+
+    const roomOptHtml = rooms.length
+      ? rooms.map(r => {
+          const val = r.name + ' (' + r.number + ')';
+          const sel = val === autoRoom ? 'selected' : '';
+          const hint = r.division ? ' [' + r.division.replace('-',' Div ') + ']' : '';
+          return `<option value="${val}" ${sel}>${r.name} · ${r.number} · Cap:${r.capacity}${hint}</option>`;
+        }).join('')
+      : `<option value="">No ${isLab?'labs':'classrooms'} added yet</option>`;
+
+    const roomBg     = isLab ? '#FFF9E6' : '#F0FDF4';
+    const roomLabel  = isLab ? 'Assign Lab' : (permanentRoom && !isLab ? '🔒 ' + permanentRoom.name : 'Assign Classroom');
+    const lockedNote = (!isLab && permanentRoom)
+      ? `<div style="font-size:10px;color:#059669;margin-top:2px;">📌 Permanent room for ${divKey.replace('-',' Div ')}</div>`
+      : (isLab && autoRoom ? `<div style="font-size:10px;color:#d97706;margin-top:2px;">📌 Same lab as other divisions</div>` : '');
+
+    const facName = s.faculty || '';
+    const facLabel = facName ? facName : 'No faculty assigned';
+    return `
+    <div style="display:grid;grid-template-columns:30px 1fr 1fr 1fr;gap:10px;align-items:start;padding:12px;background:#F7F9FC;border-radius:12px;margin-bottom:8px;">
+      <input type="checkbox" id="ttSub_${s.id}" value="${s.id}" checked style="width:18px;height:18px;cursor:pointer;accent-color:var(--sky);margin-top:14px;">
+      <div>
+        <div style="font-weight:600;font-size:14px;">${s.name}</div>
+        <div style="font-size:11px;color:var(--gray);">${s.code || ''} · ${s.type} · ${s.grades} lec/week</div>
+        <div style="font-size:11px;color:#0369a1;margin-top:2px;font-weight:500;">👤 ${facLabel}</div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--gray);margin-bottom:4px;font-weight:500;">PREFERRED SESSION</div>
+        <select id="ttSlot_${s.id}" style="padding:8px 10px;border-radius:10px;border:1.5px solid #E5E7EB;font-size:12px;font-family:'DM Sans',sans-serif;outline:none;width:100%;background:#F0F9FF;">
+          <option value="">Any session (default)</option>
+          <option value="morning1">🌅 Morning 1 &nbsp;(9:15 – 10:55)</option>
+          <option value="morning2">☀️ Morning 2 &nbsp;(11:15 – 12:55)</option>
+          <option value="afternoon">🌇 Afternoon &nbsp;(1:45 – 4:15)</option>
+        </select>
+        <div style="font-size:10px;color:#6B7280;margin-top:3px;">Fixes this subject to the selected session</div>
+      </div>
+      <div>
+        <select id="ttRoom_${s.id}" style="padding:8px 10px;border-radius:10px;border:1.5px solid #E5E7EB;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;background:${roomBg};width:100%;">
+          <option value="">${roomLabel}</option>
+          ${roomOptHtml}
+        </select>
+        ${lockedNote}
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('ttAssign').style.display = 'block';
+  document.getElementById('ttAssign').scrollIntoView({ behavior:'smooth' });
+}
+
+function generateTimetable() {
+  const year = document.getElementById('ttYear').value;
+  const div  = document.getElementById('ttDiv').value;
+  const sem  = document.getElementById('ttSem').value;
+  const dept = adminDepartment || document.getElementById('ttDept').value;
+
+  // ── Collect selected subjects ──
+  const selected = getVisibleSubjects().filter(s => {
+    const cb = document.getElementById('ttSub_' + s.id);
+    return cb && cb.checked;
+  }).map(s => ({
+    ...s,
+    assignedFaculty:  s.faculty || '',
+    preferredSession: document.getElementById('ttSlot_' + s.id)?.value || '',
+    assignedRoom:     document.getElementById('ttRoom_' + s.id)?.value || ''
+  }));
+
+  if (selected.length === 0) { alert('Please select at least one subject!'); return; }
+
+  // ── Slot index constants — built dynamically from current SLOTS ──
+  // Only include actual lecture slots (exclude break, lunch, hons)
+  const ALL_LEC_SLOTS = SLOTS
+    .map((s, i) => s.type === 'lec' ? i : -1)
+    .filter(i => i >= 0);
+
+  // Consecutive pairs of lecture slots (for labs) — only adjacent indices with no break between
+  const CONSEC_PAIRS = [];
+  for (let i = 0; i < ALL_LEC_SLOTS.length - 1; i++) {
+    const a = ALL_LEC_SLOTS[i];
+    const b = ALL_LEC_SLOTS[i + 1];
+    if (b === a + 1) CONSEC_PAIRS.push([a, b]); // directly adjacent, no break between
+  }
+
+  // Session slot groupings — morning1 = first 2 lec, morning2 = next 2, afternoon = rest
+  const morningLecs   = ALL_LEC_SLOTS.filter(i => SLOTS[i].period === 'morning');
+  const afternoonLecs = ALL_LEC_SLOTS.filter(i => SLOTS[i].period === 'afternoon');
+  const SESSION_SLOTS = {
+    morning1:  morningLecs.slice(0, 2),
+    morning2:  morningLecs.slice(2, 4),
+    afternoon: afternoonLecs,
+  };
+
+  // ── Build bookedSlots from OTHER saved timetables (faculty clash prevention) ──
+  const otherTTs = JSON.parse(localStorage.getItem('ef_timetables') || '[]')
+    .filter(tt => !(tt.year === year && tt.div === div && tt.dept === dept));
+
+  const bookedSlots = new Set(); // "facultyKey|day|si"
+  const bookedLabs  = new Set(); // "roomKey|day|si"
+
+  otherTTs.forEach(tt => {
+    if (!tt.grid) return;
+    Object.entries(tt.grid).forEach(([day, slots]) => {
+      Object.entries(slots).forEach(([si, cell]) => {
+        if (!cell) return;
+        if (cell.assignedFaculty) {
+          const fk = normalizeFacultyKey(cell.assignedFaculty);
+          if (fk) bookedSlots.add(fk + '|' + day + '|' + si);
+        }
+        if (cell.lab && cell.room) {
+          bookedLabs.add(cell.room.toLowerCase().trim() + '|' + day + '|' + si);
+        }
+      });
+    });
+  });
+
+  // ── Initialise empty grid ──
+  const grid = {};
+  DAYS.forEach(d => {
+    grid[d] = {};
+    SLOTS.forEach((_, si) => { grid[d][si] = null; });
+  });
+
+  // ── Helper: is a faculty free at day/si (checks other TTs + current grid) ──
+  function facFree(facName, day, si) {
+    const fk = normalizeFacultyKey(facName);
+    if (!fk) return true;
+    if (bookedSlots.has(fk + '|' + day + '|' + si)) return false;
+    const c = grid[day][si];
+    return !(c && normalizeFacultyKey(c.assignedFaculty) === fk);
+  }
+
+  // ── Helper: rest rule — no faculty 3 lec in a row ──
+  // No faculty should have 3+ consecutive lectures in a row
+  const adjacentLecSlots = { 0:[1], 1:[0], 3:[4], 4:[3], 6:[7], 7:[6,8], 8:[7] };
+  function facRestOk(facName, day, si) {
+    const fk = normalizeFacultyKey(facName);
+    if (!fk) return true;
+    const neighbors = adjacentLecSlots[si] || [];
+    let run = 1;
+    for (const adj of neighbors) {
+      const c = grid[day][adj];
+      const inCurrent = c && normalizeFacultyKey(c.assignedFaculty) === fk;
+      const inBooked  = bookedSlots.has(fk + '|' + day + '|' + adj);
+      if (inCurrent || inBooked) run++;
+    }
+    return run <= 2;
+  }
+
+  // ── Helper: mark faculty slots in current grid as booked ──
+  function markFac(facName, day, si) {
+    const fk = normalizeFacultyKey(facName);
+    if (fk) bookedSlots.add(fk + '|' + day + '|' + si);
+  }
+
+  // ── MDM anchor: align MDM across divisions ──
+  const mdmAnchorKeys = new Set();
+  otherTTs.forEach(tt => {
+    if (!tt.grid || tt.year !== year || tt.dept !== dept) return;
+    Object.entries(tt.grid).forEach(([day, slots]) => {
+      Object.entries(slots).forEach(([si, cell]) => {
+        if (cell && (cell.name || '').toUpperCase().includes('MDM'))
+          mdmAnchorKeys.add(day + '|' + si);
+      });
+    });
+  });
+  const mdmAnchors = Array.from(mdmAnchorKeys).map(k => {
+    const [d, s] = k.split('|'); return { day: d, si: Number(s) };
+  });
+  const hasMDM = selected.some(s => (s.name || '').toUpperCase().includes('MDM') && s.type !== 'Lab');
+
+  // ── Lab rooms ──
+  const allLabRooms = getVisibleClassrooms().filter(r => r.type === 'Lab');
+
+  function labRoomFree(roomVal, day, s1, s2) {
+    const rk = roomVal.toLowerCase().trim();
+    return !bookedLabs.has(rk + '|' + day + '|' + s1) &&
+           !bookedLabs.has(rk + '|' + day + '|' + s2);
+  }
+
+  function pickLabRoom(sub, day, s1, s2) {
+    const manual = sub.assignedRoom || '';
+    if (manual && labRoomFree(manual, day, s1, s2)) return manual;
+    // subject-specific lab
+    const subName = (sub.name || '').trim().toLowerCase();
+    const specific = allLabRooms.find(r => r.labSubject && r.labSubject.trim().toLowerCase() === subName);
+    if (specific) {
+      const v = specific.name + ' (' + specific.number + ')';
+      if (labRoomFree(v, day, s1, s2)) return v;
+    }
+    // any free lab
+    for (const r of allLabRooms) {
+      const v = r.name + ' (' + r.number + ')';
+      if (labRoomFree(v, day, s1, s2)) return v;
+    }
+    return manual || '';
+  }
+
+  function markLabRoom(roomVal, day, s1, s2) {
+    if (!roomVal) return;
+    const rk = roomVal.toLowerCase().trim();
+    bookedLabs.add(rk + '|' + day + '|' + s1);
+    bookedLabs.add(rk + '|' + day + '|' + s2);
+  }
+
+  // ── Day load (for balancing) ──
+  function dayLoad(day) {
+    let n = 0;
+    Object.values(grid[day]).forEach(c => {
+      if (!c) return;
+      if (c.lab && c.labPart === 2) return;
+      n += c.lab ? 2 : 1;
+    });
+    return n;
+  }
+
+  function subOnDay(day, sub) {
+    const key = getSubjectIdentityKey(sub);
+    return Object.values(grid[day]).some(c => c && getSubjectIdentityKey(c) === key);
+  }
+
+  function labsOnDay(day, period) {
+    return Object.entries(grid[day])
+      .filter(([si, c]) => c && c.lab && c.labPart === 1 && SLOTS[si].period === period)
+      .length;
+  }
+
+  // ── SORT: pinned labs → pinned lecs → unpinned labs → MDM → rest ──
+  const sortedSelected = [...selected].sort((a, b) => {
+    const rank = s => {
+      const pin = !!s.preferredSession;
+      const lab = s.type === 'Lab';
+      const mdm = (s.name || '').toUpperCase().includes('MDM');
+      if (pin && lab)  return 0;
+      if (pin && !lab) return 1;
+      if (!pin && lab) return 2;
+      if (mdm)         return 3;
+      return 4;
+    };
+    return rank(a) - rank(b);
+  });
+
+  const unplacedSubjects    = [];
+  const sessionConflictWarn = [];
+
+  // ── PLACE EACH SUBJECT ──────────────────────────────────────────────────
+  sortedSelected.forEach((sub, colorIdx) => {
+    const origIdx = selected.findIndex(s => s.id === sub.id);
+    const color   = CELL_COLORS[(origIdx >= 0 ? origIdx : colorIdx) % CELL_COLORS.length];
+    const needed  = sub.grades;
+    let   placed  = 0;
+
+    // Preferred slots for this subject
+    const prefKey    = sub.preferredSession;
+    const prefSlots  = (prefKey && SESSION_SLOTS[prefKey]) ? SESSION_SLOTS[prefKey] : null;
+    const prefPeriod = prefKey ? (prefKey.startsWith('morning') ? 'morning' : 'afternoon') : null;
+    // For labs: match EXACT session slots (morning1=[0,1], morning2=[3,4], afternoon=[6,7,8])
+    // A pair qualifies only if BOTH slots are inside the preferred session's slot list
+    const prefPairs  = prefSlots
+      ? CONSEC_PAIRS.filter(([s1, s2]) => prefSlots.includes(s1) && prefSlots.includes(s2))
+      : null;
+
+    // Session name for warnings
+    const sessionLabel = prefKey === 'morning1' ? 'Morning 1 (9:15–10:55)'
+                       : prefKey === 'morning2' ? 'Morning 2 (11:15–12:55)'
+                       : prefKey === 'afternoon' ? 'Afternoon (1:45–4:15)' : '';
+
+    // Days sorted: days with most free preferred slots first, then by load
+    function sortedDays() {
+      return [...DAYS].sort((a, b) => {
+        if (prefSlots) {
+          const aFree = prefSlots.filter(si => !grid[a][si]).length;
+          const bFree = prefSlots.filter(si => !grid[b][si]).length;
+          if (aFree !== bFree) return bFree - aFree;
+        }
+        return dayLoad(a) - dayLoad(b) || (Math.random() - 0.5);
+      });
+    }
+
+    // ── LAB PLACEMENT ──
+    if (sub.type === 'Lab') {
+      // Pass A: strict preferred pairs only
+      const passAPairs = prefPairs && prefPairs.length > 0 ? prefPairs : CONSEC_PAIRS;
+      // Pass B: all pairs (fallback)
+      const passBPairs = CONSEC_PAIRS;
+
+      function tryPlaceLab(pairsToTry) {
+        for (const day of sortedDays()) {
+          if (placed >= needed) break;
+          if (subOnDay(day, sub)) continue;
+          if (Object.values(grid[day]).filter(c => c && c.lab && c.labPart === 1).length >= 2) continue;
+          for (const [s1, s2] of pairsToTry) {
+            if (hasMDM && (mdmAnchorKeys.has(day+'|'+s1) || mdmAnchorKeys.has(day+'|'+s2))) continue;
+            if (labsOnDay(day, SLOTS[s1].period) >= 1) continue;
+            if (grid[day][s1] || grid[day][s2]) continue;
+            if (!facFree(sub.assignedFaculty, day, s1) || !facFree(sub.assignedFaculty, day, s2)) continue;
+            const room = pickLabRoom(sub, day, s1, s2);
+            grid[day][s1] = { ...sub, color, lab: true, labPart: 1, room };
+            grid[day][s2] = { ...sub, color, lab: true, labPart: 2, room };
+            markFac(sub.assignedFaculty, day, s1);
+            markFac(sub.assignedFaculty, day, s2);
+            markLabRoom(room, day, s1, s2);
+            placed++;
+            break;
+          }
+        }
+      }
+
+      tryPlaceLab(passAPairs);
+
+      // If still not placed and had a preference → warn + fallback
+      if (placed < needed && prefPairs) {
+        sessionConflictWarn.push(`"${sub.name}" preferred ${sessionLabel} — no free consecutive pair found, trying other sessions`);
+        tryPlaceLab(passBPairs);
+      }
+
+    // ── LECTURE PLACEMENT (includes MDM) ──
+    } else {
+      const isMDM = (sub.name || '').toUpperCase().includes('MDM');
+
+      // ── MDM SPECIAL LOGIC ──
+      // Rule: MDM must appear at the SAME day+slot across ALL divisions of same year+dept.
+      // If anchors exist (Div A already saved) → this div MUST follow those exact slots.
+      // MDM alignment rule:
+      // - If preferred session is explicitly set → always use it (admin override), ignore anchors
+      // - If no preferred session AND anchors exist → follow anchors to align with other divs
+      // - If no preferred session AND no anchors → place freely (first div)
+      if (isMDM && mdmAnchors.length > 0 && !prefKey) {
+        // No preference set: follow existing anchors exactly to align with other divisions
+        for (const anchor of mdmAnchors) {
+          if (placed >= needed) break;
+          if (!grid[anchor.day][anchor.si]) {
+            grid[anchor.day][anchor.si] = { ...sub, color };
+            markFac(sub.assignedFaculty, anchor.day, anchor.si);
+            placed++;
+          }
+        }
+        if (placed < needed) {
+          unplacedSubjects.push(`${sub.name} (${placed}/${needed}) — anchor slots occupied`);
+        }
+        return; // done for this MDM subject
+      }
+      // If preferred session is set on MDM: use normal placement with preferred slots
+      // (admin explicitly wants a different time — overrides anchors)
+
+      // Normal lecture placement (MDM first div, or non-MDM)
+      const pass1Slots = prefSlots || ALL_LEC_SLOTS;
+      const pass2Slots = ALL_LEC_SLOTS;
+
+      function tryPlaceLec(slotsToTry, allowSameDay) {
+        for (const day of sortedDays()) {
+          if (placed >= needed) break;
+          if (!allowSameDay && subOnDay(day, sub)) continue;
+          for (const si of slotsToTry) {
+            // Other subjects cannot occupy MDM anchor slots (only when MDM follows anchors)
+            const mdmFollowsAnchors = hasMDM && mdmAnchors.length > 0 &&
+              !selected.find(s => (s.name||'').toUpperCase().includes('MDM') && s.preferredSession);
+            if (!isMDM && mdmFollowsAnchors && mdmAnchorKeys.has(day + '|' + si)) continue;
+            if (!grid[day][si] && facFree(sub.assignedFaculty, day, si) && facRestOk(sub.assignedFaculty, day, si)) {
+              grid[day][si] = { ...sub, color, room: sub.assignedRoom || '' };
+              markFac(sub.assignedFaculty, day, si);
+              placed++;
+              break;
+            }
+          }
+        }
+      }
+
+      // Pass 1: strict preferred slots only
+      tryPlaceLec(pass1Slots, false);
+
+      // If pinned but couldn't fill → warn + fallback
+      if (placed < needed && prefSlots) {
+        const fk = normalizeFacultyKey(sub.assignedFaculty);
+        const clashDetails = [];
+        if (fk) {
+          DAYS.forEach(day => {
+            prefSlots.forEach(si => {
+              if (bookedSlots.has(fk + '|' + day + '|' + si)) {
+                otherTTs.forEach(tt => {
+                  if (tt.grid && tt.grid[day] && tt.grid[day][si]) {
+                    const c = tt.grid[day][si];
+                    if (normalizeFacultyKey(c.assignedFaculty) === fk)
+                      clashDetails.push(`${day} ${SLOTS[si].label} → already in ${tt.year} Div ${tt.div} (${c.name})`);
+                  }
+                });
+              }
+            });
+          });
+        }
+        sessionConflictWarn.push(clashDetails.length > 0
+          ? `"${sub.name}" preferred ${sessionLabel} but ${sub.assignedFaculty} is already assigned: ${clashDetails.slice(0,2).join('; ')}`
+          : `"${sub.name}" preferred ${sessionLabel} — slots were occupied, placed elsewhere`);
+        tryPlaceLec(pass2Slots, false);
+        if (placed < needed) tryPlaceLec(pass2Slots, true);
+      }
+
+      // Unpinned fallback
+      if (placed < needed && !prefSlots) {
+        tryPlaceLec(ALL_LEC_SLOTS, false);
+        if (placed < needed) tryPlaceLec(ALL_LEC_SLOTS, true);
+      }
+    }
+
+    if (placed < needed) {
+      unplacedSubjects.push(`${sub.name} (${placed}/${needed})`);
+    }
+  });
+
+  // ── Render ──
+  const tt = { year, div, sem, dept, grid };
+  window._currentTT = tt;
+  renderTimetable(tt);
+  document.getElementById('ttResult').style.display = 'block';
+  document.getElementById('ttResult').scrollIntoView({ behavior: 'smooth' });
+
+  // ── Warnings ──
+  let warnParts = [];
+  if (sessionConflictWarn.length > 0) {
+    const u = [...new Set(sessionConflictWarn)];
+    warnParts.push(
+      `<div style="margin-bottom:6px;"><strong>⚠ Preferred Session Conflicts:</strong></div>` +
+      u.map(w => `<div style="margin:2px 0 2px 10px;">• ${w}</div>`).join('')
+    );
+  }
+  if (unplacedSubjects.length > 0) {
+    warnParts.push(
+      `<div style="margin-top:${warnParts.length?'8px':'0'};"><strong>⚠ Partially Unscheduled:</strong> ${unplacedSubjects.join(', ')}</div>`
+    );
+  }
+  showTimetableWarning(warnParts.length ? warnParts.join('') : '');
+
+  // ── Lab room summary ──
+  const labSummary = [];
+  DAYS.forEach(day => {
+    SLOTS.forEach((slot, si) => {
+      const cell = grid[day][si];
+      if (cell && cell.lab && cell.labPart === 1) {
+        labSummary.push(
+          `<span style="background:#FFF9E6;border:1px solid #F59E0B;border-radius:8px;padding:4px 10px;font-size:12px;display:inline-block;margin:3px;">` +
+          `🧪 <strong>${cell.name}</strong> → <span style="color:#0369a1;font-weight:600;">${cell.room || '⚠ No room'}</span> on ${day}</span>`
+        );
+      }
+    });
+  });
+  const labEl = document.getElementById('ttLabSummary');
+  if (labEl) {
+    if (labSummary.length) {
+      labEl.innerHTML = `<div style="margin-top:10px;font-size:12px;font-weight:600;color:#92400E;margin-bottom:4px;">Lab Room Assignments:</div>` + labSummary.join('');
+      labEl.style.display = 'flex';
+    } else {
+      labEl.innerHTML = '';
+      labEl.style.display = 'none';
+    }
+  }
+}
+function cloneGridStripFacultyUndo(grid) {
+  const g = JSON.parse(JSON.stringify(grid));
+  Object.keys(g).forEach(day => {
+    const row = g[day];
+    if (!row || typeof row !== 'object') return;
+    Object.keys(row).forEach(si => {
+      const cell = row[si];
+      if (cell && typeof cell === 'object') delete cell._efRestore;
+    });
+  });
+  return g;
+}
+
+function saveTimetable() {
+  if (!window._currentTT) return;
+  const gridBaseline = cloneGridStripFacultyUndo(window._currentTT.grid);
+  window._currentTT = { ...window._currentTT, gridBaseline };
+  const tts = JSON.parse(localStorage.getItem('ef_timetables') || '[]');
+  const currentIdentity = getTimetableIdentity(window._currentTT);
+  const existIdx = tts.findIndex(t => getTimetableIdentity(t) === currentIdentity);
+  if (existIdx !== -1) { tts[existIdx] = window._currentTT; }
+  else { tts.push(window._currentTT); }
+  localStorage.setItem('ef_timetables', JSON.stringify(tts));
+  renderSavedTT();
+
+  // ── Notify backend: save timetable to DB + send faculty emails ──
+  notifyTimetableSaved(window._currentTT);
+
+  alert('✅ Timetable saved!');
+  renderAll();
+}
+
+function renderSavedTT() {
+  const tts = JSON.parse(localStorage.getItem('ef_timetables') || '[]');
+  const el  = document.getElementById('savedTTList');
+  if (tts.length === 0) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">📅</div><div class="empty-text">No timetables saved yet.</div></div>';
+    return;
+  }
+  el.innerHTML = tts.map((tt,i) => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:#F7F9FC;border-radius:12px;margin-bottom:8px;">
+      <div>
+        <div style="font-weight:600;font-size:14px;">${tt.year} - Div ${tt.div}</div>
+        <div style="font-size:12px;color:var(--gray);">${tt.sem} · ${tt.dept}</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="viewSavedTT(${i})" style="background:#E0F4FF;color:#0284C7;border:none;padding:8px 16px;border-radius:100px;font-size:12px;cursor:pointer;font-weight:600;">View</button>
+        <button onclick="deleteSavedTT(${i})" style="background:#FEE2E2;color:#991B1B;border:none;padding:8px 16px;border-radius:100px;font-size:12px;cursor:pointer;font-weight:600;">Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function viewSavedTT(idx) {
+  const tts = JSON.parse(localStorage.getItem('ef_timetables') || '[]');
+  window._currentTT = tts[idx];
+  renderTimetable(tts[idx]);
+  showTimetableWarning('');
+  document.getElementById('ttSetup').style.display  = 'none';
+  document.getElementById('ttAssign').style.display = 'none';
+  document.getElementById('ttResult').style.display = 'block';
+  document.getElementById('ttResult').scrollIntoView({ behavior:'smooth' });
+}
+
+function deleteSavedTT(idx) {
+  if (!confirm('Delete this timetable?')) return;
+  const tts = JSON.parse(localStorage.getItem('ef_timetables') || '[]');
+  tts.splice(idx, 1);
+  localStorage.setItem('ef_timetables', JSON.stringify(tts));
+  renderSavedTT(); renderAll();
+}
+
+function resetGenerator() {
+  document.getElementById('ttResult').style.display = 'none';
+  document.getElementById('ttAssign').style.display = 'none';
+  document.getElementById('ttSetup').style.display  = 'none';
+  document.getElementById('ttTiming').style.display = 'block';
+  document.getElementById('ttTimingPreview').style.display = 'none';
+  showTimetableWarning('');
+  syncTimetableDepartmentField();
+}
+
+function printTT() {
+  if (!window._currentTT) {
+    alert('Please generate or open a timetable first.');
+    return;
+  }
+  const tt      = window._currentTT;
+  const content = buildTimetableLayoutHtml(tt, { colorFade: 0.0, printMode: true });
+  const title   = `${tt.year} - Div ${tt.div} Timetable`;
+  const w = window.open('', '_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>${title}</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Times New Roman',serif;background:#fff;color:#000;padding:10mm;}
+    @page{size:A4 landscape;margin:8mm;}
+    html,body{width:100%;height:100%;}
+    .tt-print-layout{width:100%;page-break-inside:avoid;}
+    table{width:100%;border-collapse:collapse;font-size:9px;table-layout:fixed;}
+    th,td{border:1px solid #000;padding:3px 4px;vertical-align:middle;text-align:center;}
+    th{font-weight:bold;background:#fff;font-size:9px;}
+    td{font-size:8.5px;}
+    @media print{*{-webkit-print-color-adjust:exact;print-color-adjust:exact;}body{padding:0;margin:0;}}
+  <\/style>
+  <script>
+    window.onload=function(){
+      var wrap=document.querySelector('.tt-print-layout');
+      if(wrap){var bw=document.body.clientWidth;var ew=wrap.scrollWidth;
+        if(ew>bw){var s=bw/ew;wrap.style.transform='scale('+s+')';wrap.style.transformOrigin='top left';wrap.style.width=(100/s)+'%';}
+      }
+      setTimeout(function(){window.print();},300);
+    };
+  <\/script>
+  </head><body>${content}</body></html>`);
+  w.document.close();
+}
+
+
+// ===== CHANGELOG (Faculty Changes) =====
+let changelogFilter = 'all';
+
+function getChangelog() {
+  const all = JSON.parse(localStorage.getItem('ef_changelog') || '[]');
+  // Filter by admin's department — only show changes from your own department
+  if (!adminDepartment) return all;
+  return all.filter(e => !e.dept || e.dept === adminDepartment);
+}
+
+function setChangelogFilter(filter, btn) {
+  changelogFilter = filter;
+  document.querySelectorAll('.cl-filter').forEach(b => {
+    b.style.background = '#F4F4F4';
+    b.style.color = '#374151';
+  });
+  if (btn) { btn.style.background = '#E0F4FF'; btn.style.color = '#0284C7'; }
+  renderChangelog();
+}
+
+function clearChangelog() {
+  if (!confirm('Clear all change logs for your department? This cannot be undone.')) return;
+  if (adminDepartment) {
+    // Only remove logs belonging to this department
+    const all = JSON.parse(localStorage.getItem('ef_changelog') || '[]');
+    const remaining = all.filter(e => e.dept && e.dept !== adminDepartment);
+    localStorage.setItem('ef_changelog', JSON.stringify(remaining));
+  } else {
+    localStorage.removeItem('ef_changelog');
+  }
+  renderChangelog();
+}
+
+function revertChange(logId) {
+  const log = getChangelog();
+  const entry = log.find(e => e.id === logId);
+  if (!entry) { alert('Log entry not found.'); return; }
+  // Security: only revert changes from your own department
+  if (adminDepartment && entry.dept && entry.dept !== adminDepartment) {
+    alert('You can only revert changes from your own department.');
+    return;
+  }
+
+  const tts = JSON.parse(localStorage.getItem('ef_timetables') || '[]');
+  const ttIdx = tts.findIndex(t =>
+    (t.year||'') === entry.year &&
+    (t.div||'')  === entry.div  &&
+    (t.sem||'')  === entry.sem  &&
+    (t.dept||'') === entry.dept
+  );
+  if (ttIdx === -1) { alert('Timetable not found. It may have been deleted.'); return; }
+
+  const tt = tts[ttIdx];
+  const si = Object.entries({0:'9:15 - 10:05',1:'10:05 - 10:55',2:'10:55 - 11:15',3:'11:15 - 12:05',4:'12:05 - 12:55',5:'12:55 - 1:45',6:'1:45 - 2:35',7:'2:35 - 3:25',8:'3:25 - 4:15'})
+    .find(([k,v]) => v === entry.slot);
+  if (!si) { alert('Could not find slot index for: ' + entry.slot); return; }
+  const slotIndex = Number(si[0]);
+
+  if (!tt.grid || !tt.grid[entry.day]) { alert('Grid data missing for this timetable.'); return; }
+
+  const cell = tt.grid[entry.day][slotIndex];
+  if (!cell) { alert('Cell is empty — nothing to revert.'); return; }
+
+  if (!confirm(`Revert this slot back to:
+Subject: ${entry.before.name || '(empty)'}
+Faculty: ${entry.before.faculty || '(empty)'}
+
+This will undo the change made by ${entry.faculty}.`)) return;
+
+  cell.assignedFaculty = entry.before.faculty;
+  cell.faculty = entry.before.faculty;
+  cell.name = entry.before.name;
+  delete cell._efRestore;
+
+  // Also revert lab partner row if it's a lab
+  if (cell.lab && cell.labPart === 1) {
+    const p2 = tt.grid[entry.day][slotIndex + 1];
+    if (p2) {
+      p2.assignedFaculty = entry.before.faculty;
+      p2.faculty = entry.before.faculty;
+      p2.name = entry.before.name;
+      delete p2._efRestore;
+    }
+  }
+
+  localStorage.setItem('ef_timetables', JSON.stringify(tts));
+
+  // Remove this log entry after revert
+  const updatedLog = log.filter(e => e.id !== logId);
+  localStorage.setItem('ef_changelog', JSON.stringify(updatedLog));
+
+  alert('✅ Slot reverted successfully!');
+  renderChangelog();
+}
+
+function renderChangelog() {
+  const host = document.getElementById('changelogList');
+  if (!host) return;
+
+  const log = getChangelog();
+  const filtered = changelogFilter === 'all' ? log : log.filter(e => e.action === changelogFilter);
+
+  if (!filtered.length) {
+    host.innerHTML = `<div style="padding:40px 0;text-align:center;color:#6B7280;font-size:13px;">
+      <div style="font-size:32px;margin-bottom:12px;">📋</div>
+      <div>${changelogFilter === 'all' ? 'No faculty changes recorded yet.' : 'No changes of this type yet.'}</div>
+    </div>`;
+    return;
+  }
+
+  const actionColors = {
+    'Cover Slot':  { bg: '#FEF9C3', color: '#854D0E' },
+    'Edit Title':  { bg: '#E0F4FF', color: '#0284C7' },
+    'Change Slot': { bg: '#EDE9FE', color: '#5B21B6' },
+  };
+
+  const fmt = ts => {
+    const d = new Date(ts);
+    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()} · ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+  };
+
+  host.innerHTML = `
+    <table style="width:100%;border-collapse:collapse;">
+      <thead>
+        <tr style="border-bottom:2px solid #F0F0F0;">
+          <th style="padding:10px 12px;text-align:left;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#6B7280;">#</th>
+          <th style="padding:10px 12px;text-align:left;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#6B7280;">Faculty</th>
+          <th style="padding:10px 12px;text-align:left;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#6B7280;">Action</th>
+          <th style="padding:10px 12px;text-align:left;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#6B7280;">Timetable</th>
+          <th style="padding:10px 12px;text-align:left;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#6B7280;">Slot</th>
+          <th style="padding:10px 12px;text-align:left;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#6B7280;">Before → After</th>
+          <th style="padding:10px 12px;text-align:left;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#6B7280;">When</th>
+          <th style="padding:10px 12px;text-align:left;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#6B7280;">Revert</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${filtered.map((e, i) => {
+          const ac = actionColors[e.action] || { bg: '#F3F4F6', color: '#374151' };
+          return `<tr style="border-bottom:1px solid #F9F9F9;">
+            <td style="padding:14px 12px;font-size:13px;color:#6B7280;">${i + 1}</td>
+            <td style="padding:14px 12px;">
+              <div style="font-weight:700;font-size:13px;">${e.faculty || '-'}</div>
+              <div style="font-size:11px;color:#6B7280;">${e.facultyEmail || ''}</div>
+            </td>
+            <td style="padding:14px 12px;">
+              <span style="padding:4px 10px;border-radius:100px;font-size:11px;font-weight:700;background:${ac.bg};color:${ac.color};">${e.action}</span>
+            </td>
+            <td style="padding:14px 12px;font-size:12px;">
+              <div style="font-weight:600;">${e.year || ''} – Div ${e.div || ''}</div>
+              <div style="color:#6B7280;">${e.dept || ''} · ${e.sem || ''}</div>
+            </td>
+            <td style="padding:14px 12px;font-size:12px;">
+              <div style="font-weight:600;">${e.day || ''}</div>
+              <div style="color:#6B7280;">${e.slot || ''}</div>
+            </td>
+            <td style="padding:14px 12px;font-size:12px;max-width:220px;">
+              <div style="display:flex;align-items:flex-start;gap:8px;">
+                <div style="background:#FEE2E2;border-radius:8px;padding:6px 10px;flex:1;">
+                  <div style="font-size:10px;color:#991B1B;font-weight:700;margin-bottom:2px;">BEFORE</div>
+                  <div style="font-weight:600;color:#0A0A0A;">${e.before.name || '—'}</div>
+                  <div style="color:#6B7280;font-size:11px;">${e.before.faculty || '—'}</div>
+                </div>
+                <div style="padding-top:14px;color:#6B7280;">→</div>
+                <div style="background:#D1FAE5;border-radius:8px;padding:6px 10px;flex:1;">
+                  <div style="font-size:10px;color:#065F46;font-weight:700;margin-bottom:2px;">AFTER</div>
+                  <div style="font-weight:600;color:#0A0A0A;">${e.after.name || '—'}</div>
+                  <div style="color:#6B7280;font-size:11px;">${e.after.faculty || '—'}</div>
+                </div>
+              </div>
+            </td>
+            <td style="padding:14px 12px;font-size:11px;color:#6B7280;white-space:nowrap;">${fmt(e.timestamp)}</td>
+            <td style="padding:14px 12px;">
+              <button onclick="revertChange('${e.id}')" style="background:#FEE2E2;color:#991B1B;border:none;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;">↩ Revert</button>
+            </td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>`;
+}
+
+function logout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('role');
+  localStorage.removeItem('name');
+  localStorage.removeItem('department');
+  const base = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
+  window.location.href = base + 'index.html';
+}
+
+// ── BACKEND API HELPERS ──────────────────────────────────────────────────
+
+async function notifyTimetableSaved(tt) {
+  try {
+    const res = await fetch(`${API_ROOT}/notify/timetable-saved`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ timetable: tt }),
+    });
+    const data = await res.json();
+    console.log('Notify result:', data.message);
+  } catch (e) {
+    console.warn('Could not reach backend for notifications:', e.message);
+  }
+}
+
+async function syncFacultyToBackend() {
+  try {
+    const allFaculty = JSON.parse(localStorage.getItem('ef_faculty') || '[]');
+    await fetch(`${API_ROOT}/notify/sync-faculty`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ faculty: allFaculty }),
+    });
+  } catch (e) {
+    console.warn('Could not sync faculty to backend:', e.message);
+  }
+}
+
+// ========== INIT ==========
+syncFacultyDepartmentFields();
+syncTimetableDepartmentField();
+if (dedupeSubjects() > 0) saveData();
+renderAll();
+renderSavedTT();
+</script>
+</body>
+</html>

@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EduFlow - Faculty Workspace</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--sky:#38BDF8;--sky-light:#E0F4FF;--black:#0A0A0A;--gray:#6B7280;--gray-light:#F7F9FC;--red:#E63946;--green:#065F46;--green-bg:#D1FAE5;--yellow:#854D0E;--yellow-bg:#FEF9C3;--purple:#5B21B6;--purple-bg:#EDE9FE;--sidebar:260px;}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--gray-light);color:var(--black)}
+#sidebar{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;background:var(--black);padding:0 0 24px;display:flex;flex-direction:column}
+#main{margin-left:var(--sidebar);padding:32px;min-height:100vh}
+.brand{padding:28px 24px 24px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;gap:12px;align-items:center}
+.brand-badge,.avatar{width:40px;height:40px;border-radius:12px;background:var(--sky);display:flex;align-items:center;justify-content:center;color:var(--black);font-family:'Bebas Neue',sans-serif}
+.brand-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:#fff}
+.brand-sub,.user-role,.section{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.section{padding:20px 16px 8px;color:rgba(255,255,255,.3)}
+.nav-item{display:flex;gap:12px;align-items:center;margin:2px 8px;padding:12px 16px;border-radius:12px;color:rgba(255,255,255,.65);cursor:pointer;text-decoration:none}
+.nav-item.active,.nav-item:hover{background:var(--sky);color:var(--black)}
+.nav-icon{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center}
+.userbox{margin-top:auto;padding:0 8px}
+.user{display:flex;gap:12px;align-items:center;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,.05);margin-bottom:8px}
+.user-name{font-size:13px;font-weight:600;color:#fff}
+.logout{padding:12px 16px;border-radius:12px;color:rgba(255,255,255,.4);cursor:pointer}
+.logout:hover{background:rgba(230,57,70,.15);color:var(--red)}
+.page{display:none}.page.active{display:block}
+.top{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:28px}
+.title{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px}
+.sub{font-size:13px;color:var(--gray);margin-top:2px}
+.date{background:#fff;border:1px solid #E5E7EB;padding:8px 16px;border-radius:100px;font:12px 'Space Mono',monospace;color:var(--gray)}
+.stats,.grid2,.grid3{display:grid;gap:16px;margin-bottom:28px}
+.stats{grid-template-columns:repeat(4,1fr)}.grid2{grid-template-columns:1.1fr .9fr}.grid3{grid-template-columns:repeat(3,1fr)}
+.card,.action{background:#fff;border:1px solid #F0F0F0;border-radius:20px;padding:24px}
+.stat{position:relative;overflow:hidden}
+.icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:16px}
+.num{font-family:'Bebas Neue',sans-serif;font-size:42px;line-height:1}
+.label{font-size:13px;color:var(--gray)}
+.water{position:absolute;right:-16px;bottom:-16px;font:80px 'Bebas Neue',sans-serif;opacity:.06}
+.head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.head-title{font-size:15px;font-weight:600}
+.chip,.btn,.ghost{border:none;border-radius:100px;font-family:'DM Sans',sans-serif}
+.chip{padding:8px 14px;background:var(--sky-light);color:#0284C7;font-size:12px;font-weight:500}
+.btn{padding:14px 18px;background:var(--black);color:#fff;font-size:14px;font-weight:600;cursor:pointer}
+.btn:hover{background:var(--sky);color:var(--black)}
+.ghost{padding:14px 18px;background:#F4F4F4;font-size:14px;font-weight:600;cursor:pointer}
+.ghost.danger{background:#FEE2E2;color:#991B1B}
+.action{cursor:pointer;transition:.2s}
+.action:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.08)}
+.action-title{font-size:15px;font-weight:600}
+.action-copy{font-size:12px;color:var(--gray);line-height:1.6}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;padding:12px 16px;border-radius:12px;border:1.5px solid #E5E7EB;background:#F7F9FC;font:14px 'DM Sans',sans-serif;outline:none}
+.field textarea{min-height:100px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--sky);background:#fff}
+.field input[readonly]{background:#F1F5F9;color:#475569}
+.form2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.stack,.pills{display:flex;gap:8px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;padding:4px 12px;border-radius:100px;font-size:11px;font-weight:600}
+.blue{background:var(--sky-light);color:#0284C7}.green{background:var(--green-bg);color:var(--green)}.yellow{background:var(--yellow-bg);color:var(--yellow)}.purple{background:var(--purple-bg);color:var(--purple)}
+.empty{padding:28px 0;text-align:center;font-size:13px;color:var(--gray)}
+.tt-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.tt-card{border:1px solid #E5E7EB;border-radius:16px;padding:16px;background:#fff;cursor:pointer;transition:.2s;text-align:left;font:inherit}
+.tt-card:hover{border-color:var(--sky);box-shadow:0 8px 24px rgba(0,0,0,.06)}
+.tt-card-title{font-weight:700;font-size:15px;margin-bottom:6px}
+.tt-card-meta{font-size:12px;color:var(--gray);line-height:1.5}
+.tt-card-badge{margin-top:10px;display:inline-flex;padding:4px 10px;border-radius:100px;font-size:11px;font-weight:600;background:var(--green-bg);color:var(--green)}
+.tt-cover-btn{margin-top:6px;padding:4px 10px;border-radius:8px;border:1px solid #111;background:#fff;font-size:10px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+.tt-cover-btn:hover{background:var(--sky-light)}
+.tt-restore-btn{margin-top:2px;padding:4px 10px;border-radius:8px;border:1px solid #92400E;background:#FFFBEB;font-size:10px;font-weight:700;cursor:pointer;color:#78350F;font-family:'DM Sans',sans-serif}
+.tt-restore-btn:hover{background:#FEF3C7}
+.tt-restore-published-btn{margin-top:4px;padding:4px 10px;border-radius:8px;border:1px solid #3730A3;background:#EEF2FF;font-size:10px;font-weight:700;cursor:pointer;color:#312E81;font-family:'DM Sans',sans-serif}
+.tt-restore-published-btn:hover{background:#E0E7FF}
+.tt-baseline-banner{margin-bottom:16px;padding:12px 16px;border-radius:12px;background:#FEF9C3;border:1px solid #EAB308;font-size:13px;color:#713F12;line-height:1.5}
+.tt-edit-title-btn{margin-top:2px;padding:2px 0;border:none;background:none;font-size:10px;font-weight:600;color:#0284C7;cursor:pointer;text-decoration:underline;font-family:'DM Sans',sans-serif;text-align:left}
+.tt-edit-title-btn:hover{color:#0369A1}
+.tt-cover-note{font-size:10px;color:var(--gray);margin-top:4px;line-height:1.4}
+.tt-change-btn{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;border:1.5px solid #0284C7;background:#E0F4FF;cursor:pointer;font-size:14px;transition:.2s;flex-shrink:0;margin-top:4px;}
+.tt-change-btn:hover{background:#0284C7;color:#fff;transform:scale(1.1);}
+#changeSlotModal{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;}
+#changeSlotModal.open{display:flex;}
+.csm-box{background:#fff;border-radius:20px;padding:32px;width:100%;max-width:420px;box-shadow:0 24px 64px rgba(0,0,0,0.18);position:relative;}
+.csm-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;margin-bottom:4px;}
+.csm-sub{font-size:12px;color:var(--gray);margin-bottom:20px;}
+.csm-field{margin-bottom:14px;}
+.csm-field label{display:block;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);margin-bottom:6px;font-weight:600;}
+.csm-field input,.csm-field select{width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid #E5E7EB;background:#F7F9FC;font:14px 'DM Sans',sans-serif;outline:none;}
+.csm-field input:focus,.csm-field select:focus{border-color:var(--sky);background:#fff;}
+.csm-error{background:#FEE2E2;color:#991B1B;border-radius:10px;padding:10px 14px;font-size:12px;margin-bottom:14px;display:none;line-height:1.5;}
+.csm-error.show{display:block;}
+.csm-btns{display:flex;gap:10px;margin-top:6px;}
+.csm-close{position:absolute;top:16px;right:18px;background:none;border:none;font-size:18px;cursor:pointer;color:var(--gray);}
+.csm-close:hover{color:var(--black);}
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.filter-row .chip{cursor:pointer;border:none}.filter-row .chip.active{background:var(--black);color:#fff}
+.list{display:grid;gap:12px}
+.item{border:1px solid #F0F0F0;border-radius:16px;padding:16px}
+.item-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start;margin-bottom:8px}
+.item-title{font-size:15px;font-weight:700}
+.item-sub,.item-note{font-size:12px;color:var(--gray);line-height:1.6}
+table{width:100%;border-collapse:collapse}
+th{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);padding:8px 12px;text-align:left;border-bottom:1px solid #F0F0F0}
+td{padding:12px;font-size:13px;border-bottom:1px solid #F9F9F9;vertical-align:top}
+tr:last-child td{border-bottom:none}
+@media (max-width:1000px){.stats,.grid2,.grid3,.form2{grid-template-columns:1fr 1fr}}
+@media (max-width:820px){#sidebar{position:static;width:100%;height:auto}#main{margin-left:0;padding:20px}.stats,.grid2,.grid3,.form2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="sidebar">
+  <div class="brand"><div class="brand-badge">EF</div><div><div class="brand-title">EduFlow</div><div class="brand-sub">Faculty Workspace</div></div></div>
+  <div class="section">Workspace</div>
+  <a class="nav-item active" data-nav="dashboard" onclick="showPage('dashboard',this)"><div class="nav-icon">DA</div>Dashboard</a>
+  <a class="nav-item" data-nav="lectures" onclick="showPage('lectures',this)"><div class="nav-icon">AL</div>Assigned Lectures</a>
+  <a class="nav-item" data-nav="timetables" onclick="showPage('timetables',this)"><div class="nav-icon">TT</div>Timetables</a>
+  <div class="userbox">
+    <div class="user"><div class="avatar" id="avatar">F</div><div><div class="user-name" id="fname">Faculty</div><div class="user-role">Teacher / Faculty</div></div></div>
+    <div class="logout" onclick="logout()">Logout</div>
+  </div>
+</div>
+<div id="main">
+  <!-- DASHBOARD -->
+  <div class="page active" id="page-dashboard">
+    <div class="top"><div><div class="title">Faculty Dashboard</div><div class="sub">Review your assigned slots from the official timetable and open saved class timetables when admin publishes them.</div></div><div class="date" id="date">-</div></div>
+    <div class="stats">
+      <div class="card stat"><div class="icon" style="background:#E0F4FF">SL</div><div class="num" id="s1">0</div><div class="label">Assigned slots</div><div class="water">TT</div></div>
+      <div class="card stat"><div class="icon" style="background:#D1FAE5">SB</div><div class="num" id="s2">0</div><div class="label">HOD subject records</div><div class="water">ADM</div></div>
+      <div class="card stat"><div class="icon" style="background:#FEF9C3">DV</div><div class="num" id="s3">0</div><div class="label">Divisions you teach</div><div class="water">DIV</div></div>
+      <div class="card stat"><div class="icon" style="background:#EDE9FE">TT</div><div class="num" id="s4">0</div><div class="label">Saved timetables</div><div class="water">CAL</div></div>
+    </div>
+    <div class="grid2">
+      <div class="action" onclick="showPage('lectures',navEl('lectures'))"><div class="action-title">Assigned Lectures</div><div class="action-copy">See every period that lists you on the saved timetables, with subject, division, day, and time.</div></div>
+      <div class="action" onclick="showPage('timetables',navEl('timetables'))"><div class="action-title">Timetables</div><div class="action-copy">Browse division timetables admin saved. Cover a colleague only when you have no other class that period.</div></div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="head"><div class="head-title">Admin Teaching Records</div><span class="chip">Shared by HOD</span></div>
+        <table><thead><tr><th>#</th><th>Faculty Name</th><th>Email</th><th>Subject</th><th>Code</th><th>Semester</th><th>Division</th><th>Grade</th></tr></thead><tbody id="adminRecords"></tbody></table>
+      </div>
+      <div class="card"><div class="head"><div class="head-title">Your slots preview</div></div><div id="snapshot"></div></div>
+    </div>
+  </div>
+
+  <!-- ASSIGNED LECTURES PAGE — with Print button -->
+  <div class="page" id="page-lectures">
+    <div class="top">
+      <div>
+        <div class="title">Assigned Lectures</div>
+        <div class="sub">Final lecture assignments linked to your faculty email will appear here.</div>
+      </div>
+      <button type="button" onclick="printAssignedLectures()" style="background:#D1FAE5;color:#065F46;border:none;padding:10px 22px;border-radius:100px;font-size:13px;cursor:pointer;font-weight:700;display:flex;align-items:center;gap:6px;">&#128424;&#65039; Print Timetable</button>
+    </div>
+    <div class="card">
+      <table>
+        <thead><tr><th>#</th><th>Subject</th><th>Division</th><th>Timing</th><th>Type</th></tr></thead>
+        <tbody id="lectureTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TIMETABLES PAGE -->
+  <div class="page" id="page-timetables">
+    <div class="top">
+      <div><div class="title">Timetables</div><div class="sub">Every timetable admin saves appears here by year, division, semester, and department. Open one to see the full grid. You can take over another teacher's period only if you have no other class in that same slot anywhere.</div></div>
+      <div class="date" id="dateTt">-</div>
+    </div>
+    <div id="ttListWrap">
+      <div class="card" style="margin-bottom:20px">
+        <div class="head">
+          <div class="head-title">Saved class timetables</div>
+          <div class="filter-row" id="ttFilterRow">
+            <span style="font-size:12px;color:var(--gray)">Show</span>
+            <button type="button" class="chip tt-filter active" data-filter="all" onclick="setTimetableFilter('all',this)">All</button>
+            <button type="button" class="chip tt-filter" data-filter="mine" onclick="setTimetableFilter('mine',this)">Where I teach</button>
+          </div>
+        </div>
+        <div id="ttCardList" class="tt-cards" onclick="onTimetableCardListClick(event)"></div>
+      </div>
+    </div>
+    <div id="ttDetailWrap" style="display:none">
+      <div class="card">
+        <div class="head">
+          <div><div class="head-title" id="ttDetailTitle">Timetable</div><div class="sub" id="ttDetailSub" style="margin-top:6px"></div></div>
+          <div style="display:flex;gap:8px;">
+            <button type="button" onclick="printTimetableFromFaculty()" style="background:#D1FAE5;color:#065F46;border:none;padding:10px 20px;border-radius:100px;font-size:13px;cursor:pointer;font-weight:600;">&#128424; Print</button>
+            <button type="button" class="ghost" onclick="closeTimetableDetail()">&#8592; Back to list</button>
+          </div>
+        </div>
+        <p class="sub" style="margin:12px 0 16px"><strong>Cover this class</strong> when a colleague is absent. <strong>Restore previous class</strong> undoes your last cover or title edit. <strong>Restore to HOD version</strong> resets the cell to the last Admin save. For <strong>your</strong> slots you can also use <strong>Edit class title</strong>. Labs update both rows together.</p>
+        <div id="ttDetailGrid" style="overflow-x:auto" onclick="onTimetableGridClick(event)"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CHANGE SLOT MODAL -->
+<div id="changeSlotModal" onclick="csmOutsideClick(event)">
+  <div class="csm-box">
+    <button class="csm-close" onclick="closeChangeModal()">&#x2715;</button>
+    <div class="csm-title">Change Slot</div>
+    <div class="csm-sub" id="csmSlotInfo">Updating slot</div>
+    <div class="csm-error" id="csmError"></div>
+    <div class="csm-field"><label>New Subject / Class Title</label><input type="text" id="csmSubject" placeholder="e.g. Data Structures"/></div>
+    <div class="csm-field"><label>Assign Teacher</label><select id="csmTeacher"><option value="">&#8212; Select Teacher &#8212;</option></select></div>
+    <div class="csm-btns"><button class="btn" onclick="applyChangeSlot()">&#10003; Apply Change</button><button class="ghost" onclick="closeChangeModal()">Cancel</button></div>
+  </div>
+</div>
+
+<script>
+const token = localStorage.getItem('token');
+const role = localStorage.getItem('role');
+const facultyName = localStorage.getItem('name') || 'Faculty';
+const facultyEmail = localStorage.getItem('email') || '';
+
+if (!token || role !== 'Teacher / Faculty') {
+  const base = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
+  window.location.href = base + 'index.html';
+}
+
+document.getElementById('fname').textContent = facultyName;
+document.getElementById('avatar').textContent = facultyName.charAt(0).toUpperCase();
+const facultyDepartment = (localStorage.getItem('department') || '').trim();
+
+const now = new Date();
+const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const dateStr = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+document.getElementById('date').textContent = dateStr;
+const dateTtEl = document.getElementById('dateTt');
+if (dateTtEl) dateTtEl.textContent = dateStr;
+
+const TT_SLOT_LABELS = {0:'9:15 - 10:05',1:'10:05 - 10:55',2:'10:55 - 11:15',3:'11:15 - 12:05',4:'12:05 - 12:55',5:'12:55 - 1:45',6:'1:45 - 2:35',7:'2:35 - 3:25',8:'3:25 - 4:15'};
+const TT_DAYS = ['Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const TT_SLOTS = [
+  {label:'9:15 \u2013 10:05',type:'lec'},{label:'10:05 \u2013 10:55',type:'lec'},
+  {label:'10:55 \u2013 11:15',type:'break',name:'Break'},
+  {label:'11:15 \u2013 12:05',type:'lec'},{label:'12:05 \u2013 12:55',type:'lec'},
+  {label:'12:55 \u2013 1:45',type:'lunch',name:'Lunch Break'},
+  {label:'1:45 \u2013 2:35',type:'lec'},{label:'2:35 \u2013 3:25',type:'lec'},{label:'3:25 \u2013 4:15',type:'lec'},
+];
+const TT_COLLEGE_NAME = 'Kolhapur Institue of Technoloy';
+const TT_COLLEGE_TAGLINE = 'Department Timetable';
+const TT_LOGO = 'EF';
+
+let timetableListFilter = 'all';
+let timetableDetailIdentity = '';
+
+function navEl(nav){return document.querySelector(`.nav-item[data-nav="${nav}"]`);}
+function normalizeText(v){return(v||'').trim().toLowerCase().replace(/\s+/g,' ');}
+function getFacultyDirectory(){return JSON.parse(localStorage.getItem('ef_faculty')||'[]');}
+function getFacultyByName(name){const k=normalizeText(name);if(!k)return null;return getFacultyDirectory().find(f=>normalizeText(f.name)===k)||null;}
+function getAdminRecords(){const all=JSON.parse(localStorage.getItem('ef_subjects')||'[]');return all.filter(item=>{const rn=item.faculty||'';const mapped=getFacultyByName(rn);const me=mapped?.email||'';if(facultyEmail&&me)return normalizeText(me)===normalizeText(facultyEmail);return normalizeText(rn)===normalizeText(facultyName);});}
+function getTimetableIdentity(tt){return`${tt.year||''}|${tt.div||''}|${tt.sem||''}|${tt.dept||''}`;}
+function facultyMatchesAssignment(n){const mapped=getFacultyByName(n);const me=mapped?.email||'';if(facultyEmail&&me)return normalizeText(me)===normalizeText(facultyEmail);return normalizeText(n)===normalizeText(facultyName);}
+function cellAssignedFaculty(cell){return cell.assignedFaculty||cell.faculty||'';}
+function cellMatchesMe(cell){return facultyMatchesAssignment(cellAssignedFaculty(cell));}
+function getAllTimetables(){return JSON.parse(localStorage.getItem('ef_timetables')||'[]');}
+function getVisibleTimetablesForFaculty(){let list=getAllTimetables();if(facultyDepartment){list=list.filter(tt=>!(tt.dept||'').trim()||(tt.dept||'')===facultyDepartment);}return list;}
+function saveAllTimetables(tts){localStorage.setItem('ef_timetables',JSON.stringify(tts));}
+
+function logFacultyChange(action, identity, day, si, before, after) {
+  const log = JSON.parse(localStorage.getItem('ef_changelog') || '[]');
+  const parts = identity.split('|');
+  log.unshift({
+    id: Date.now() + '_' + Math.random().toString(36).slice(2,7),
+    timestamp: Date.now(),
+    faculty: facultyName,
+    facultyEmail: facultyEmail,
+    action: action,
+    timetable: identity,
+    year: parts[0] || '',
+    div: parts[1] || '',
+    sem: parts[2] || '',
+    dept: parts[3] || '',
+    day: day,
+    slot: TT_SLOT_LABELS[si] || si,
+    before: { name: before.name || '', faculty: before.assignedFaculty || before.faculty || '' },
+    after:  { name: after.name  || '', faculty: after.assignedFaculty  || after.faculty  || '' }
+  });
+  // Keep only last 200 entries
+  if (log.length > 200) log.splice(200);
+  localStorage.setItem('ef_changelog', JSON.stringify(log));
+}
+
+function timetableIncludesMe(tt){if(!tt||!tt.grid)return false;let found=false;Object.entries(tt.grid).forEach(([day,slots])=>{Object.entries(slots||{}).forEach(([si,cell])=>{if(!cell)return;if(cell.lab&&cell.labPart===2)return;if(cellMatchesMe(cell))found=true;});});return found;}
+function computeMyBusySlotKeys(){const busy=new Set();getAllTimetables().forEach(tt=>{if(!tt.grid)return;Object.entries(tt.grid).forEach(([day,slots])=>{Object.entries(slots||{}).forEach(([si,cell])=>{if(!cell)return;if(!cellMatchesMe(cell))return;const i=Number(si);busy.add(`${day}|${i}`);if(cell.lab&&cell.labPart===1)busy.add(`${day}|${i+1}`);});});});return busy;}
+function slotsRequiredForCover(cell,si){if(cell.lab&&cell.labPart===1)return[si,si+1];return[si];}
+function canCoverCell(cell,day,si,busy){if(!cell||(cell.lab&&cell.labPart===2))return false;if(cellMatchesMe(cell))return false;const n=(cell.name||'').trim();const f=cellAssignedFaculty(cell).trim();if(!n&&!f)return false;return slotsRequiredForCover(cell,si).every(s=>!busy.has(`${day}|${s}`));}
+function snapshotCellForRestore(c){return{assignedFaculty:c.assignedFaculty!=null?String(c.assignedFaculty):'',faculty:c.faculty!=null?String(c.faculty):'',name:c.name!=null?String(c.name):''};}
+function applySnapshotToCell(c,snap){c.assignedFaculty=snap.assignedFaculty;c.faculty=snap.faculty;c.name=snap.name;delete c._efRestore;}
+function canCurrentUserRestore(cell){if(!cell||!cell._efRestore)return false;const r=cell._efRestore;if(cellMatchesMe(cell))return true;if(facultyMatchesAssignment(r.assignedFaculty))return true;if(r.faculty&&facultyMatchesAssignment(r.faculty))return true;return false;}
+function buildRestoreHtml(ttId,day,si,cell){if(!canCurrentUserRestore(cell))return'';return`<button type="button" class="tt-restore-btn" data-tt-id="${encodeURIComponent(ttId)}" data-day="${day}" data-slot="${si}">Restore previous class</button><div class="tt-cover-note">Reverts the previous teacher and class title.</div>`;}
+function getPublishedCell(tt,day,si){if(!tt.gridBaseline||!tt.gridBaseline[day])return null;const v=tt.gridBaseline[day][si];return v===undefined?null:v;}
+function teachingCellsEqual(a,b){if(a==null&&b==null)return true;if(a==null||b==null)return false;const x=snapshotCellForRestore(a);const y=snapshotCellForRestore(b);return normalizeText(x.assignedFaculty)===normalizeText(y.assignedFaculty)&&normalizeText(x.faculty)===normalizeText(y.faculty)&&x.name===y.name;}
+function slotDiffersFromPublished(tt,day,si,cell){if(!tt.gridBaseline||!cell)return false;if(cell.lab&&cell.labPart===2)return false;const b1=getPublishedCell(tt,day,si);if(cell.lab&&cell.labPart===1){const p2=tt.grid[day][si+1];const b2=getPublishedCell(tt,day,si+1);return!teachingCellsEqual(cell,b1)||!teachingCellsEqual(p2,b2);}return!teachingCellsEqual(cell,b1);}
+function canCurrentUserRestorePublished(tt,day,si,cell){if(!slotDiffersFromPublished(tt,day,si,cell))return false;const b1=getPublishedCell(tt,day,si);const bfac=cellAssignedFaculty(b1||{});if(cellMatchesMe(cell))return true;if(bfac&&facultyMatchesAssignment(bfac))return true;return false;}
+function buildPublishedRestoreHtml(tt,ttId,day,si,cell){if(!canCurrentUserRestorePublished(tt,day,si,cell))return'';return`<button type="button" class="tt-restore-published-btn" data-tt-id="${encodeURIComponent(ttId)}" data-day="${day}" data-slot="${si}">Restore to HOD version</button><div class="tt-cover-note">Reset to the last official save in Admin.</div>`;}
+function copyTeachingFromPublished(target,source){if(!target||!source)return;target.assignedFaculty=source.assignedFaculty!=null?String(source.assignedFaculty):'';target.faculty=source.faculty!=null?String(source.faculty):'';target.name=source.name!=null?String(source.name):'';delete target._efRestore;}
+function blendHexWithWhite(hex,f){const s=(hex||'').replace('#','');if(!/^[0-9a-fA-F]{6}$/.test(s))return hex||'#FFFFFF';const r=parseInt(s.slice(0,2),16),g=parseInt(s.slice(2,4),16),b=parseInt(s.slice(4,6),16);const nr=Math.round(r+(255-r)*f),ng=Math.round(g+(255-g)*f),nb=Math.round(b+(255-b)*f);const h=n=>n.toString(16).padStart(2,'0');return`#${h(nr)}${h(ng)}${h(nb)}`;}
+function getTimetableHeaderLine(tt){const dept=tt.dept||facultyDepartment||'Department';return`${dept} | ${tt.year||''} - Div ${tt.div||''} | ${tt.sem||''}`;}
+
+function buildFacultyTimetableTableHtml(tt,ttId,busy){
+  const grid=tt.grid;const cf=0.45;const eB=blendHexWithWhite('#EAF2FF',0.7);const bB=blendHexWithWhite('#E5E7EB',0.3);
+  let html=`<table style="width:100%;border-collapse:collapse;font-size:12px;min-width:780px;table-layout:fixed;border:2px solid #111;"><thead><tr><th style="background:#0A0A0A;color:#fff;padding:12px 10px;text-align:center;font-size:11px;letter-spacing:1px;min-width:130px;border:1px solid #111;">Time</th>${TT_DAYS.map(d=>`<th style="background:#0A0A0A;color:#fff;padding:12px 8px;text-align:center;font-size:11px;letter-spacing:1px;border:1px solid #111;">${d}</th>`).join('')}</tr></thead><tbody>`;
+  TT_SLOTS.forEach((slot,si)=>{
+    if(slot.type==='break'||slot.type==='lunch'){html+=`<tr><td style="padding:10px 12px;background:${bB};font-size:11px;color:#374151;font-weight:700;border:1px solid #111;text-align:center;">${slot.label}</td><td colspan="${TT_DAYS.length}" style="background:${bB};text-align:center;font-size:11px;color:#111827;font-weight:700;letter-spacing:2px;text-transform:uppercase;border:1px solid #111;">${slot.name}</td></tr>`;return;}
+    html+=`<tr><td style="padding:10px 8px;font-size:11px;color:#374151;white-space:nowrap;border:1px solid #111;text-align:center;font-weight:700;">${slot.label}</td>${TT_DAYS.map(day=>{
+      const cell=(grid[day]&&grid[day][si])||null;
+      if(!cell)return`<td style="border:1px solid #111;padding:6px;min-width:110px;min-height:72px;vertical-align:top;background:${eB};"></td>`;
+      if(cell.lab&&cell.labPart===2)return'';
+      const cover=canCoverCell(cell,day,si,busy);const mine=cellMatchesMe(cell);
+      const rUH=buildRestoreHtml(ttId,day,si,cell);const rPH=buildPublishedRestoreHtml(tt,ttId,day,si,cell);const anyR=rUH||rPH;
+      let cov='';
+      if(!anyR){if(cover){cov=`<button type="button" class="tt-change-btn" title="Change this slot" data-tt-id="${encodeURIComponent(ttId)}" data-day="${day}" data-slot="${si}" data-action="change">\u{1F504}</button>`;}
+      else if(!mine&&(cell.name||cell.faculty||cell.assignedFaculty)){cov=`<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;border:1.5px solid #E5E7EB;background:#FFF5F5;margin-top:4px;font-size:13px;cursor:default;">\u{1F6AB}</span>`;}}
+      const mn=mine?`<div class="tt-cover-note">${cell.lab&&cell.labPart===1?'Your lab':'Your class'}</div>`:'';
+      const et=mine&&!(cell.lab&&cell.labPart===2)?`<button type="button" class="tt-edit-title-btn" data-tt-id="${encodeURIComponent(ttId)}" data-day="${day}" data-slot="${si}">Edit class title</button>`:'';
+      const acts=`${rUH}${rPH}${mn}${et}${anyR?'':cov}`;
+      if(cell.lab&&cell.labPart===1){const bg=blendHexWithWhite(cell.color,cf);return`<td rowspan="2" style="border:1px solid #111;padding:6px;vertical-align:top;min-width:110px;background:#fff;"><div style="background:${bg};border-radius:8px;padding:8px;min-height:140px;display:flex;flex-direction:column;gap:6px;border:1px solid rgba(0,0,0,0.14);"><div style="font-weight:700;font-size:12px;color:#0A0A0A;">${cell.name||''}</div><div style="font-size:10px;color:#374151;">${cell.assignedFaculty||cell.faculty||'Faculty: -'}</div>${cell.room?`<div style="font-size:10px;color:#0369a1;font-weight:700;">\u{1F4CD} ${cell.room} \u00b7 LAB</div>`:'<div style="font-size:10px;color:#1D4ED8;font-weight:700;">LAB (DOUBLE SLOT)</div>'}${acts}</div></td>`;}
+      const bg=blendHexWithWhite(cell.color,cf);
+      return`<td style="border:1px solid #111;padding:6px;vertical-align:top;min-width:110px;background:#fff;"><div style="background:${bg};border-radius:8px;padding:8px;line-height:1.45;border:1px solid rgba(0,0,0,0.14);display:flex;flex-direction:column;gap:6px;min-height:72px;"><div style="font-weight:700;font-size:12px;color:#0A0A0A;">${cell.name||''}</div><div style="font-size:10px;color:#374151;">${cell.assignedFaculty||cell.faculty||'Faculty: -'}</div>${cell.room?`<div style="font-size:10px;color:#0369a1;font-weight:700;">\u{1F4CD} ${cell.room}</div>`:''}${acts}</div></td>`;
+    }).join('')}</tr>`;
+  });
+  return html+'</tbody></table>';
+}
+
+function buildFacultyTimetableLayoutHtml(tt,ttId,busy){
+  return`<div style="background:#fff;border:2px solid #111;padding:14px;"><div style="display:flex;align-items:center;justify-content:space-between;gap:14px;border:1px solid #111;padding:12px 14px;margin-bottom:12px;"><div style="display:flex;align-items:center;gap:12px;"><div style="width:56px;height:56px;border:2px solid #111;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px;">${TT_LOGO}</div><div><div style="font-size:18px;font-weight:800;text-transform:uppercase;">${TT_COLLEGE_NAME}</div><div style="font-size:12px;color:#374151;font-weight:600;">${TT_COLLEGE_TAGLINE}</div></div></div><div style="text-align:right;"><div style="font-size:15px;font-weight:800;">CLASS TIMETABLE</div><div style="font-size:12px;color:#374151;font-weight:600;">${getTimetableHeaderLine(tt)}</div></div></div><div style="overflow-x:auto;">${buildFacultyTimetableTableHtml(tt,ttId,busy)}</div></div>`;
+}
+
+function getLectureAssignments(){
+  const timetables=JSON.parse(localStorage.getItem('ef_timetables')||'[]');
+  const assignments=[];
+  timetables.forEach(tt=>{
+    if(!tt.grid)return;
+    Object.entries(tt.grid).forEach(([day,slots])=>{
+      Object.entries(slots||{}).forEach(([slotIndex,cell])=>{
+        if(!cell)return;
+        if(cell.lab&&cell.labPart===2)return;
+        const assignedName=cell.assignedFaculty||cell.faculty||'';
+        const mapped=getFacultyByName(assignedName);const me=mapped?.email||'';
+        const match=(facultyEmail&&me)?normalizeText(me)===normalizeText(facultyEmail):normalizeText(assignedName)===normalizeText(facultyName);
+        if(!match)return;
+        assignments.push({
+          id:`${tt.year||''}-${tt.div||''}-${tt.sem||''}-${day}-${slotIndex}-${cell.name||''}`,
+          subjectName:cell.name||'-',
+          division:`${tt.year||'-'}-${tt.div||'-'}`,
+          dept:tt.dept||facultyDepartment||'Department',
+          day, slotIndex:Number(slotIndex),
+          slot:TT_SLOT_LABELS[Number(slotIndex)]||'-',
+          type:cell.lab?'Lab':(cell.type||'Lecture'),
+          room:cell.room||''
+        });
+      });
+    });
+  });
+  return assignments;
+}
+
+// ══ PRINT ASSIGNED LECTURES — Faculty Personal Timetable ══════════════════
+function printAssignedLectures(){
+  const lectures=getLectureAssignments();
+  if(!lectures.length){alert('No assigned lectures found. Admin must save a timetable that includes your classes first.');return;}
+  const PRINT_DAYS=['Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const PRINT_SLOTS=[
+    {label:'9:15 \u2013 10:05',type:'lec',si:0},{label:'10:05 \u2013 10:55',type:'lec',si:1},
+    {label:'10:55 \u2013 11:15',type:'break',name:'Break'},
+    {label:'11:15 \u2013 12:05',type:'lec',si:3},{label:'12:05 \u2013 12:55',type:'lec',si:4},
+    {label:'12:55 \u2013 1:45',type:'lunch',name:'Lunch Break'},
+    {label:'1:45 \u2013 2:35',type:'lec',si:6},{label:'2:35 \u2013 3:25',type:'lec',si:7},{label:'3:25 \u2013 4:15',type:'lec',si:8},
+  ];
+  const lookup={};
+  lectures.forEach(lec=>{if(!lookup[lec.day])lookup[lec.day]={};if(!lookup[lec.day][lec.slotIndex])lookup[lec.day][lec.slotIndex]=[];lookup[lec.day][lec.slotIndex].push(lec);});
+  const dept=facultyDepartment||lectures[0]?.dept||'Department';
+  const now2=new Date();const yr=now2.getFullYear();
+  const acYear=now2.getMonth()>=6?`${yr}-${String(yr+1).slice(2)}`:`${yr-1}-${String(yr).slice(2)}`;
+  let rows='';
+  PRINT_SLOTS.forEach(slot=>{
+    if(slot.type==='break'||slot.type==='lunch'){rows+=`<tr><td style="padding:5px 8px;border:1px solid #000;text-align:center;font-weight:bold;font-size:10px;background:#f5f5f5;">${slot.label}</td><td colspan="${PRINT_DAYS.length}" style="border:1px solid #000;text-align:center;font-weight:bold;font-size:10px;text-transform:uppercase;letter-spacing:2px;background:#f5f5f5;">${slot.name}</td></tr>`;return;}
+    rows+=`<tr><td style="padding:5px 8px;border:1px solid #000;text-align:center;font-size:10px;font-weight:bold;white-space:nowrap;background:#fafafa;">${slot.label}</td>`;
+    PRINT_DAYS.forEach(day=>{
+      const cells=(lookup[day]&&lookup[day][slot.si])||[];
+      if(!cells.length){rows+=`<td style="border:1px solid #000;padding:4px;min-width:90px;height:56px;"></td>`;}
+      else{const inner=cells.map(c=>`<div style="padding-bottom:${cells.length>1?'3px':'0'};border-bottom:${cells.length>1?'1px dashed #bbb':'none'};margin-bottom:${cells.length>1?'3px':'0'};"><div style="font-weight:bold;font-size:10px;">${c.subjectName}</div><div style="font-size:9px;color:#444;">${c.division}</div>${c.room?`<div style="font-size:9px;font-weight:bold;">${c.room}</div>`:''}<div style="font-size:8px;color:#666;font-style:italic;">${c.type}</div></div>`).join('');rows+=`<td style="border:1px solid #000;padding:5px;vertical-align:middle;text-align:center;">${inner}</td>`;}
+    });
+    rows+='</tr>';
+  });
+  const content=`<!DOCTYPE html><html><head><title>Faculty Timetable - ${facultyName}</title><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:'Times New Roman',serif;background:#fff;color:#000;}@page{size:A4 landscape;margin:10mm;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #000;padding:5px;vertical-align:middle;text-align:center;}@media print{*{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}</style></head><body>
+  <div style="border:2px solid #000;width:100%;">
+    <div style="border-bottom:2px solid #000;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;">
+      <div><div style="font-size:15px;font-weight:bold;text-transform:uppercase;letter-spacing:.5px;">K.I.T's College of Engineering (Autonomous), Kolhapur</div><div style="font-size:12px;font-weight:bold;margin-top:3px;">Department of ${dept}</div><div style="font-size:11px;margin-top:2px;">Academic Year ${acYear}</div></div>
+      <div style="text-align:right;"><div style="font-size:13px;font-weight:bold;text-transform:uppercase;">Faculty Timetable</div><div style="font-size:11px;margin-top:2px;">EduFlow \u2014 Smart Timetable System</div></div>
+    </div>
+    <div style="border-bottom:2px solid #000;padding:7px 14px;display:flex;justify-content:space-between;align-items:center;">
+      <div style="font-size:13px;font-weight:bold;">Faculty: ${facultyName}</div>
+      <div style="font-size:11px;color:#333;">Printed: ${dateStr}</div>
+    </div>
+    <table style="font-size:11px;"><thead><tr><th style="background:#111;color:#fff;min-width:95px;padding:7px;">Time</th>${PRINT_DAYS.map(d=>`<th style="background:#111;color:#fff;padding:7px;">${d}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table>
+  </div>
+  <script>window.onload=function(){window.print();}<\/script></body></html>`;
+  const w=window.open('','_blank');w.document.write(content);w.document.close();w.focus();
+}
+
+// ══ PRINT CLASS TIMETABLE (Faculty view) ══════════════════════════════════
+function printTimetableFromFaculty(){
+  if(!timetableDetailIdentity){alert('No timetable open.');return;}
+  const tt=getAllTimetables().find(t=>getTimetableIdentity(t)===timetableDetailIdentity);
+  if(!tt||!tt.grid){alert('Timetable not found.');return;}
+  const PRINT_DAYS=['Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const PRINT_SLOTS=[{label:'9:15 \u2013 10:05',type:'lec'},{label:'10:05 \u2013 10:55',type:'lec'},{label:'10:55 \u2013 11:15',type:'break',name:'Break'},{label:'11:15 \u2013 12:05',type:'lec'},{label:'12:05 \u2013 12:55',type:'lec'},{label:'12:55 \u2013 1:45',type:'lunch',name:'Lunch Break'},{label:'1:45 \u2013 2:35',type:'lec'},{label:'2:35 \u2013 3:25',type:'lec'},{label:'3:25 \u2013 4:15',type:'lec'}];
+  const dept=tt.dept||facultyDepartment||'Department';
+  const now2=new Date();const yr=now2.getFullYear();const acYear=now2.getMonth()>=6?`${yr}-${String(yr+1).slice(2)}`:`${yr-1}-${String(yr).slice(2)}`;
+  let rows='';
+  PRINT_SLOTS.forEach((slot,si)=>{
+    if(slot.type==='break'||slot.type==='lunch'){rows+=`<tr><td style="padding:5px;border:1px solid #000;text-align:center;font-weight:bold;font-size:10px;">${slot.label}</td><td colspan="${PRINT_DAYS.length}" style="border:1px solid #000;text-align:center;font-weight:bold;font-size:10px;text-transform:uppercase;letter-spacing:2px;">${slot.name}</td></tr>`;return;}
+    rows+=`<tr><td style="padding:5px;border:1px solid #000;text-align:center;font-size:10px;font-weight:bold;white-space:nowrap;">${slot.label}</td>`;
+    PRINT_DAYS.forEach(day=>{
+      const cell=(tt.grid[day]&&tt.grid[day][si])||null;
+      if(!cell){rows+=`<td style="border:1px solid #000;padding:4px;min-width:80px;height:58px;"></td>`;return;}
+      if(cell.lab&&cell.labPart===2)return;
+      const rs=(cell.lab&&cell.labPart===1)?' rowspan="2"':'';
+      rows+=`<td${rs} style="border:1px solid #000;padding:5px;vertical-align:middle;text-align:center;"><div style="font-weight:bold;font-size:10px;">${cell.name||''}</div><div style="font-size:9px;color:#333;">(${cell.assignedFaculty||cell.faculty||'-'})</div>${cell.room?`<div style="font-size:9px;font-weight:bold;">${cell.room}</div>`:''}${cell.lab?'<div style="font-size:9px;font-weight:bold;">Lab (Double Slot)</div>':''}</td>`;
+    });
+    rows+='</tr>';
+  });
+  const content=`<!DOCTYPE html><html><head><title>${tt.year} - Div ${tt.div}</title><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:'Times New Roman',serif;background:#fff;color:#000;}@page{size:A4 landscape;margin:10mm;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #000;padding:5px;vertical-align:middle;text-align:center;}@media print{*{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}</style></head><body>
+  <div style="border:2px solid #000;width:100%;">
+    <div style="border-bottom:2px solid #000;padding:8px;text-align:center;"><div style="font-size:14px;font-weight:bold;">K.I.T's College of Engineering (Autonomous), Kolhapur</div><div style="font-size:12px;font-weight:bold;">Department of ${dept}</div><div style="font-size:12px;font-weight:bold;">Time Table A.Y. ${acYear}</div></div>
+    <div style="border-bottom:2px solid #000;padding:6px;text-align:center;font-size:13px;font-weight:bold;">${tt.year} ${dept} - Div ${tt.div}</div>
+    <table style="font-size:11px;"><thead><tr><th style="font-size:11px;min-width:90px;">Time</th>${PRINT_DAYS.map(d=>`<th style="font-size:11px;">${d}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table>
+  </div></body></html>`;
+  const w=window.open('','_blank');w.document.write(content);w.document.close();w.focus();w.print();
+}
+
+function setTimetableFilter(mode,btn){timetableListFilter=mode;document.querySelectorAll('.tt-filter').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');renderTimetableCardList();}
+function renderTimetableCardList(){
+  const host=document.getElementById('ttCardList');if(!host)return;
+  let list=getVisibleTimetablesForFaculty().slice().sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+  if(timetableListFilter==='mine')list=list.filter(timetableIncludesMe);
+  if(!list.length){host.innerHTML=`<div class="empty">${timetableListFilter==='mine'?'No saved timetable includes your classes yet.':'No timetables saved yet.'}</div>`;return;}
+  host.innerHTML=list.map(tt=>{const id=getTimetableIdentity(tt);const mine=timetableIncludesMe(tt);return`<button type="button" class="tt-card" data-tt-open="${encodeURIComponent(id)}"><div class="tt-card-title">${tt.year||'-'} \u00b7 Division ${tt.div||'-'}</div><div class="tt-card-meta">${tt.sem||''}<br/>${tt.dept||'Department not set'}</div>${mine?'<span class="tt-card-badge">Includes my classes</span>':''}</button>`;}).join('');
+}
+function onTimetableCardListClick(event){const btn=event.target.closest('.tt-card[data-tt-open]');if(!btn)return;openTimetableDetail(decodeURIComponent(btn.getAttribute('data-tt-open')||''));}
+function openTimetableDetail(identity){
+  const tt=getAllTimetables().find(t=>getTimetableIdentity(t)===identity);
+  if(!tt||!tt.grid){alert('Timetable not found or has no grid data.');return;}
+  timetableDetailIdentity=identity;
+  document.getElementById('ttListWrap').style.display='none';document.getElementById('ttDetailWrap').style.display='block';
+  document.getElementById('ttDetailTitle').textContent=`${tt.year||''} \u2014 Div ${tt.div||''}`;
+  document.getElementById('ttDetailSub').textContent=`${tt.sem||''} \u00b7 ${tt.dept||''}`;
+  refreshTimetableDetailGrid();
+}
+function closeTimetableDetail(){timetableDetailIdentity='';document.getElementById('ttDetailWrap').style.display='none';document.getElementById('ttListWrap').style.display='block';renderTimetableCardList();}
+function refreshTimetableDetailGrid(){
+  const wrap=document.getElementById('ttDetailGrid');if(!wrap||!timetableDetailIdentity)return;
+  const tt=getAllTimetables().find(t=>getTimetableIdentity(t)===timetableDetailIdentity);
+  if(!tt||!tt.grid){wrap.innerHTML='<div class="empty">Timetable missing.</div>';return;}
+  const busy=computeMyBusySlotKeys();
+  const banner=!tt.gridBaseline?`<div class="tt-baseline-banner"><strong>No HOD snapshot on file.</strong> Ask Admin to open this timetable and click Save once.</div>`:'';
+  wrap.innerHTML=banner+buildFacultyTimetableLayoutHtml(tt,timetableDetailIdentity,busy);
+}
+function onTimetableGridClick(event){
+  const cb=event.target.closest('.tt-change-btn[data-action="change"]');if(cb){openChangeModal(decodeURIComponent(cb.getAttribute('data-tt-id')||''),cb.getAttribute('data-day')||'',Number(cb.getAttribute('data-slot')));return;}
+  const rb=event.target.closest('.tt-restore-btn');if(rb){applyRestoreSlot(decodeURIComponent(rb.getAttribute('data-tt-id')||''),rb.getAttribute('data-day')||'',Number(rb.getAttribute('data-slot')));return;}
+  const rpb=event.target.closest('.tt-restore-published-btn');if(rpb){applyRestorePublishedSlot(decodeURIComponent(rpb.getAttribute('data-tt-id')||''),rpb.getAttribute('data-day')||'',Number(rpb.getAttribute('data-slot')));return;}
+  const eb=event.target.closest('.tt-edit-title-btn');if(eb){applyEditMySlotTitle(decodeURIComponent(eb.getAttribute('data-tt-id')||''),eb.getAttribute('data-day')||'',Number(eb.getAttribute('data-slot')));}
+}
+function applyEditMySlotTitle(identity,day,si){
+  const tts=getAllTimetables();const idx=tts.findIndex(t=>getTimetableIdentity(t)===identity);if(idx===-1)return;
+  const tt=tts[idx];const cell=tt.grid[day]&&tt.grid[day][si];if(!cell||(cell.lab&&cell.labPart===2)||!cellMatchesMe(cell))return;
+  const p2=(cell.lab&&cell.labPart===1)?tt.grid[day][si+1]:null;if(cell.lab&&cell.labPart===1&&(!p2||!p2.lab)){alert('Lab partner row is missing.');return;}
+  const nextRaw=prompt('Class title shown on this timetable:',(cell.name||'').trim());if(nextRaw===null)return;
+  const beforeSnap = snapshotCellForRestore(cell);
+  if(!cell._efRestore){cell._efRestore=snapshotCellForRestore(cell);if(p2)p2._efRestore=snapshotCellForRestore(p2);}
+  const t=nextRaw.trim();if(t){cell.name=t;if(p2)p2.name=t;}
+  logFacultyChange('Edit Title', identity, day, si, beforeSnap, snapshotCellForRestore(cell));
+  saveAllTimetables(tts);renderAll();refreshTimetableDetailGrid();
+}
+function applyCoverSlot(identity,day,si){
+  const tts=getAllTimetables();const idx=tts.findIndex(t=>getTimetableIdentity(t)===identity);if(idx===-1)return;
+  const tt=tts[idx];const cell=tt.grid[day]&&tt.grid[day][si];if(!cell||(cell.lab&&cell.labPart===2))return;
+  const busy=computeMyBusySlotKeys();if(!canCoverCell(cell,day,si,busy)){alert('You cannot cover this class.');return;}
+  const tp=prompt('Edit the class title:',(cell.name||'').trim());if(tp===null)return;
+  const p2=(cell.lab&&cell.labPart===1)?tt.grid[day][si+1]:null;
+  if(cell.lab&&cell.labPart===1&&(!p2||!p2.lab)){alert('Lab slot data incomplete.');return;}
+  const s1=snapshotCellForRestore(cell);const s2=p2?snapshotCellForRestore(p2):null;const nt=tp.trim();const nf=facultyName;
+  cell.assignedFaculty=nf;cell.faculty=nf;if(nt)cell.name=nt;
+  if(p2){p2.assignedFaculty=nf;p2.faculty=nf;if(nt)p2.name=nt;}
+  cell._efRestore=s1;if(p2&&s2)p2._efRestore=s2;
+  logFacultyChange('Cover Slot', identity, day, si, s1, snapshotCellForRestore(cell));
+  saveAllTimetables(tts);renderAll();refreshTimetableDetailGrid();alert('Slot updated.');
+}
+function applyRestoreSlot(identity,day,si){
+  const tts=getAllTimetables();const idx=tts.findIndex(t=>getTimetableIdentity(t)===identity);if(idx===-1)return;
+  const tt=tts[idx];const cell=tt.grid[day]&&tt.grid[day][si];if(!cell||(cell.lab&&cell.labPart===2))return;
+  if(!cell._efRestore||!canCurrentUserRestore(cell)){alert('You cannot restore this slot.');return;}
+  const s1={...cell._efRestore};const p2=(cell.lab&&cell.labPart===1)?tt.grid[day][si+1]:null;const s2=p2&&p2._efRestore?{...p2._efRestore}:null;
+  if(cell.lab&&cell.labPart===1&&(!p2||!s2)){alert('Lab partner row is missing restore data.');return;}
+  applySnapshotToCell(cell,s1);if(p2&&s2)applySnapshotToCell(p2,s2);
+  saveAllTimetables(tts);renderAll();refreshTimetableDetailGrid();
+}
+function applyRestorePublishedSlot(identity,day,si){
+  const tts=getAllTimetables();const idx=tts.findIndex(t=>getTimetableIdentity(t)===identity);if(idx===-1)return;
+  const tt=tts[idx];const cell=tt.grid[day]&&tt.grid[day][si];if(!cell||(cell.lab&&cell.labPart===2))return;
+  if(!tt.gridBaseline){alert('No HOD snapshot yet.');return;}
+  if(!canCurrentUserRestorePublished(tt,day,si,cell)){alert('You cannot restore this slot.');return;}
+  if(!confirm('Reset to last Admin save?'))return;
+  const b1=getPublishedCell(tt,day,si);
+  if(cell.lab&&cell.labPart===1){const p2=tt.grid[day][si+1];const b2=getPublishedCell(tt,day,si+1);if(!b1||!b1.lab||!b2||!b2.lab){alert('Published snapshot mismatch.');return;}copyTeachingFromPublished(cell,b1);if(p2)copyTeachingFromPublished(p2,b2);}
+  else if(!b1){tt.grid[day][si]=null;}else{copyTeachingFromPublished(cell,b1);}
+  saveAllTimetables(tts);renderAll();refreshTimetableDetailGrid();
+}
+
+function showPage(page,element){
+  document.querySelectorAll('.page').forEach(i=>i.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+  document.getElementById(`page-${page}`).classList.add('active');
+  if(element)element.classList.add('active');else{const a=navEl(page);if(a)a.classList.add('active');}
+  if(page==='timetables'){closeTimetableDetail();renderTimetableCardList();}
+  renderAll();
+}
+function renderDashboard(){
+  const ar=getAdminRecords();const lec=getLectureAssignments();
+  const divs=[...new Set(lec.map(i=>i.division).filter(Boolean))];
+  document.getElementById('s1').textContent=lec.length;document.getElementById('s2').textContent=ar.length;document.getElementById('s3').textContent=divs.length;document.getElementById('s4').textContent=getVisibleTimetablesForFaculty().length;
+  document.getElementById('snapshot').innerHTML=lec.length?`<div class="list">${lec.slice(0,6).map(item=>`<div class="item"><div class="item-top"><div><div class="item-title">${item.subjectName||'-'}</div><div class="item-sub">${item.division||'-'} \u00b7 ${item.day||'-'} \u00b7 ${item.slot||'-'}</div></div><span class="pill ${item.type==='Lab'?'yellow':item.type==='Tutorial'?'green':'blue'}">${item.type||'Lecture'}</span></div></div>`).join('')}</div>`:`<div class="empty">No assigned slots yet.</div>`;
+  document.getElementById('adminRecords').innerHTML=ar.length?ar.map((item,i)=>`<tr><td>${i+1}</td><td>${item.faculty||'-'}</td><td>${getFacultyByName(item.faculty||'')?.email||'-'}</td><td><strong>${item.name}</strong></td><td>${item.code||'-'}</td><td>${item.sem||'-'}</td><td>${item.div||'-'}</td><td>${item.grades||'-'}</td></tr>`).join(''):`<tr><td colspan="8"><div class="empty">No admin teaching records.</div></td></tr>`;
+}
+function renderLectures(){
+  const lec=getLectureAssignments();
+  document.getElementById('lectureTable').innerHTML=lec.length?lec.map((item,i)=>`<tr><td>${i+1}</td><td><strong>${item.subjectName||'-'}</strong></td><td>${item.division||'-'}</td><td>${item.day||'-'} - ${item.slot||'-'}</td><td><span class="pill ${item.type==='Lab'?'yellow':item.type==='Tutorial'?'green':'blue'}">${item.type||'Lecture'}</span></td></tr>`).join(''):`<tr><td colspan="5"><div class="empty">Admin-assigned lecture slots will appear here later.</div></td></tr>`;
+}
+function renderAll(){renderDashboard();renderLectures();}
+function logout(){['token','role','name','email'].forEach(k=>localStorage.removeItem(k));const base=window.location.href.substring(0,window.location.href.lastIndexOf('/')+1);window.location.href=base+'index.html';}
+
+// CHANGE SLOT MODAL
+let _csmState=null;
+function openChangeModal(identity,day,si){
+  const tts=getAllTimetables();const tt=tts.find(t=>getTimetableIdentity(t)===identity);if(!tt)return;
+  const cell=tt.grid[day]&&tt.grid[day][si];if(!cell)return;
+  const busy=computeMyBusySlotKeys();if(!canCoverCell(cell,day,si,busy)){alert('You already have another class here.');return;}
+  _csmState={identity,day,slotIndex:si};
+  document.getElementById('csmSlotInfo').textContent=`${day} \u2022 ${TT_SLOT_LABELS[si]||''} \u2022 ${tt.year||''} Div ${tt.div||''}`;
+  document.getElementById('csmSubject').value=(cell.name||'').trim();
+  const fl=JSON.parse(localStorage.getItem('ef_faculty')||'[]');const sel=document.getElementById('csmTeacher');
+  sel.innerHTML='<option value="">\u2014 Select Teacher \u2014</option>'+fl.map(f=>{const n=(f.name||'').trim();const s=normalizeText(n)===normalizeText(cellAssignedFaculty(cell))?'selected':'';return`<option value="${n}" ${s}>${n}</option>`;}).join('');
+  sel.onchange=function(){
+    const e2=document.getElementById('csmError');const chosen=sel.value.trim();
+    if(!chosen){e2.textContent='';e2.classList.remove('show');return;}
+    if(_csmState&&isTeacherBusyAtSlot(chosen,_csmState.day,_csmState.slotIndex,_csmState.identity)){
+      const details=getTeacherBusyDetails(chosen,_csmState.day,_csmState.slotIndex,_csmState.identity);
+      e2.innerHTML='<strong>'+chosen+'</strong> is already busy at this time'+(details?':<br><small style="color:#6B7280;">Located at: '+details+'</small>':'')+'. Choosing them will cause a clash.';
+      e2.classList.add('show');
+    }else{e2.textContent='';e2.classList.remove('show');}
+  };
+  const e=document.getElementById('csmError');e.textContent='';e.classList.remove('show');
+  document.getElementById('changeSlotModal').classList.add('open');setTimeout(()=>document.getElementById('csmSubject').focus(),100);
+}
+function closeChangeModal(){document.getElementById('changeSlotModal').classList.remove('open');_csmState=null;}
+function csmOutsideClick(e){if(e.target.id==='changeSlotModal')closeChangeModal();}
+function isTeacherBusyAtSlot(name,day,si,excId){
+  if(!name)return false;const normName=normalizeText(name);
+  return getAllTimetables().some(tt=>{
+    if(!tt.grid)return false;
+    return Object.entries(tt.grid).some(([d,daySlots])=>{
+      if(getTimetableIdentity(tt)===excId&&d===day)return false;
+      const c=daySlots&&daySlots[si];if(!c||(c.lab&&c.labPart===2))return false;
+      const f=normalizeText(c.assignedFaculty||c.faculty||'');return f&&f===normName;
+    });
+  });
+}
+function getTeacherBusyDetails(name,day,si,excId){
+  if(!name)return null;const normName=normalizeText(name);
+  for(const tt of getAllTimetables()){
+    if(!tt.grid)continue;
+    for(const [d,daySlots] of Object.entries(tt.grid)){
+      if(getTimetableIdentity(tt)===excId&&d===day)continue;
+      const c=daySlots&&daySlots[si];if(!c||(c.lab&&c.labPart===2))continue;
+      const f=normalizeText(c.assignedFaculty||c.faculty||'');
+      if(f&&f===normName)return`${tt.year||''} Div ${tt.div||''} — ${d} at ${TT_SLOT_LABELS[si]||'this slot'} (${c.name||'another subject'})`;
+    }
+  }
+  return null;
+}
+function applyChangeSlot(){
+  if(!_csmState)return;const{identity,day,slotIndex}=_csmState;
+  const e=document.getElementById('csmError');e.classList.remove('show');
+  const ns=document.getElementById('csmSubject').value.trim();const nt=document.getElementById('csmTeacher').value.trim();
+  if(!ns){e.textContent='\u26a0\ufe0f Please enter a subject.';e.classList.add('show');return;}
+  if(!nt){e.textContent='\u26a0\ufe0f Please select a teacher.';e.classList.add('show');return;}
+  if(isTeacherBusyAtSlot(nt,day,slotIndex,identity)){const details=getTeacherBusyDetails(nt,day,slotIndex,identity);e.innerHTML='<strong>'+nt+'</strong> is already busy at this time'+(details?':<br><small style="color:#6B7280;">Located at: '+details+'</small>':'')+'. Cannot assign.';e.classList.add('show');return;}
+  const tts=getAllTimetables();const idx=tts.findIndex(t=>getTimetableIdentity(t)===identity);if(idx===-1){closeChangeModal();return;}
+  const tt=tts[idx];const cell=tt.grid[day]&&tt.grid[day][slotIndex];if(!cell){closeChangeModal();return;}
+  const p2=(cell.lab&&cell.labPart===1)?tt.grid[day][slotIndex+1]:null;
+  if(!cell._efRestore){cell._efRestore=snapshotCellForRestore(cell);if(p2)p2._efRestore=snapshotCellForRestore(p2);}
+  const beforeChange = snapshotCellForRestore(cell);
+  cell.name=ns;cell.assignedFaculty=nt;cell.faculty=nt;if(p2){p2.name=ns;p2.assignedFaculty=nt;p2.faculty=nt;}
+  logFacultyChange('Change Slot', identity, day, slotIndex, beforeChange, snapshotCellForRestore(cell));
+  saveAllTimetables(tts);renderAll();refreshTimetableDetailGrid();closeChangeModal();
+}
+
+renderAll();
+</script>
+</body>
+</html>

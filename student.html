@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EduFlow - Student Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--sky:#38BDF8;--sky-light:#E0F4FF;--black:#0A0A0A;--gray:#6B7280;--red:#E63946;--green:#065F46;--green-bg:#D1FAE5;--yellow:#854D0E;--yellow-bg:#FEF9C3;--purple:#5B21B6;--purple-bg:#EDE9FE;--sidebar:260px}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:#F7F9FC;color:var(--black)}
+#sidebar{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;background:var(--black);padding:0 0 24px;display:flex;flex-direction:column;overflow-y:auto}
+#main{margin-left:var(--sidebar);padding:32px;min-height:100vh}
+.brand{padding:28px 24px 24px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;gap:12px;align-items:center;flex-shrink:0}
+.brand-badge,.avatar{width:40px;height:40px;border-radius:12px;background:var(--sky);display:flex;align-items:center;justify-content:center;color:var(--black);font-family:'Bebas Neue',sans-serif;font-size:18px;font-weight:700;flex-shrink:0}
+.brand-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:#fff}
+.brand-sub,.user-role,.section{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.section{padding:20px 16px 8px;color:rgba(255,255,255,.3)}
+.nav-item{display:flex;gap:12px;align-items:center;margin:2px 8px;padding:12px 16px;border-radius:12px;color:rgba(255,255,255,.65);cursor:pointer;text-decoration:none;font-size:14px;font-weight:500}
+.nav-item.active,.nav-item:hover{background:var(--sky);color:var(--black)}
+.nav-icon{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.userbox{margin-top:auto;padding:0 8px;flex-shrink:0}
+.user{display:flex;gap:12px;align-items:center;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,.05);margin-bottom:8px}
+.user-name{font-size:13px;font-weight:600;color:#fff}
+.logout{padding:12px 16px;border-radius:12px;color:rgba(255,255,255,.4);cursor:pointer;font-size:13px}
+.logout:hover{background:rgba(230,57,70,.15);color:var(--red)}
+.page{display:none}.page.active{display:block}
+.top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap;margin-bottom:28px}
+.title{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px}
+.sub{font-size:13px;color:var(--gray);margin-top:2px}
+.date{background:#fff;border:1px solid #E5E7EB;padding:8px 16px;border-radius:100px;font:12px 'Space Mono',monospace;color:var(--gray);white-space:nowrap}
+.stats,.grid3,.grid2{display:grid;gap:16px;margin-bottom:28px}
+.stats{grid-template-columns:repeat(1,1fr);max-width:240px}
+.grid3{grid-template-columns:repeat(3,1fr)}
+.grid2{grid-template-columns:1.15fr .85fr}
+.card{background:#fff;border:1px solid #F0F0F0;border-radius:20px;padding:24px}
+.action{background:#fff;border:1px solid #F0F0F0;border-radius:20px;padding:24px;cursor:pointer;transition:.2s}
+.action:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.08)}
+.action-title{font-size:15px;font-weight:600}.action-copy{font-size:12px;color:var(--gray);line-height:1.6;margin-top:6px}
+.stat{position:relative;overflow:hidden}
+.icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:16px}
+.num{font-family:'Bebas Neue',sans-serif;font-size:42px;line-height:1}
+.label{font-size:13px;color:var(--gray)}
+.water{position:absolute;right:-16px;bottom:-16px;font:80px 'Bebas Neue',sans-serif;opacity:.06}
+.head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.head-title{font-size:15px;font-weight:600}
+.chip,.btn,.ghost{border:none;border-radius:100px;font-family:'DM Sans',sans-serif;cursor:pointer}
+.chip{padding:6px 14px;background:var(--sky-light);color:#0284C7;font-size:12px;font-weight:500}
+.btn{padding:12px 20px;background:var(--black);color:#fff;font-size:14px;font-weight:600}
+.btn:hover{background:var(--sky);color:var(--black)}
+.ghost{padding:12px 20px;background:#F4F4F4;font-size:14px;font-weight:600;color:var(--black)}
+.ghost:hover{background:#E5E7EB}
+.ghost.danger{background:#FEE2E2;color:#991B1B}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);margin-bottom:6px;font-weight:600}
+.field input,.field select,.field textarea{width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid #E5E7EB;background:#F7F9FC;font:14px 'DM Sans',sans-serif;outline:none}
+.field textarea{min-height:80px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--sky);background:#fff}
+.form2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.pills,.stack{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.pill{display:inline-flex;align-items:center;padding:4px 12px;border-radius:100px;font-size:11px;font-weight:600}
+.blue{background:var(--sky-light);color:#0284C7}
+.green{background:var(--green-bg);color:var(--green)}
+.yellow{background:var(--yellow-bg);color:var(--yellow)}
+.purple{background:var(--purple-bg);color:var(--purple)}
+.pink{background:#FCE7F3;color:#9D174D}
+.red{background:#FEE2E2;color:#991B1B}
+.list{display:grid;gap:10px}
+.item{border:1px solid #F0F0F0;border-radius:14px;padding:14px 16px}
+.item-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start;margin-bottom:6px}
+.item-title{font-size:14px;font-weight:700}
+.item-sub,.item-note,.empty{font-size:12px;color:var(--gray);line-height:1.6}
+.empty{padding:24px 0;text-align:center}
+
+/* Setup card */
+.setup-card{background:linear-gradient(135deg,#0A0A0A 0%,#1a1a2e 100%);border-radius:20px;padding:32px;color:#fff;margin-bottom:28px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.setup-card h3{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;color:var(--sky);margin-bottom:6px}
+.setup-card p{font-size:13px;color:rgba(255,255,255,.6);line-height:1.6}
+.setup-form{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.setup-form select{padding:10px 14px;border-radius:10px;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.08);color:#fff;font:14px 'DM Sans',sans-serif;outline:none;cursor:pointer}
+.setup-form select option{background:#1a1a2e;color:#fff}
+.setup-form .btn-sky{padding:10px 22px;background:var(--sky);color:var(--black);border:none;border-radius:100px;font:600 14px 'DM Sans',sans-serif;cursor:pointer;font-weight:700}
+
+/* Today's classes */
+.today-slot{display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:12px;border:1px solid #F0F0F0;background:#fff;margin-bottom:8px}
+.today-time{font-family:'Space Mono',monospace;font-size:11px;color:var(--gray);min-width:90px;flex-shrink:0}
+.today-subject{font-weight:700;font-size:13px}
+.today-faculty{font-size:11px;color:var(--gray)}
+.today-badge{margin-left:auto;flex-shrink:0}
+.now-indicator{background:#D1FAE5;color:#065F46;font-size:10px;font-weight:700;padding:3px 10px;border-radius:100px}
+
+/* Timetable view */
+.tt-wrap{overflow-x:auto;margin-top:8px}
+.tt-table{width:100%;border-collapse:collapse;font-size:12px;min-width:680px}
+.tt-table th{background:var(--black);color:#fff;padding:10px 8px;text-align:center;font-size:11px;letter-spacing:1px;border:1px solid #222}
+.tt-table td{border:1px solid #E5E7EB;padding:6px;vertical-align:top;min-width:100px;height:60px;background:#fff}
+.tt-cell{border-radius:8px;padding:7px 8px;height:100%;display:flex;flex-direction:column;gap:3px}
+.tt-cell-name{font-weight:700;font-size:11px;color:#0A0A0A;line-height:1.2}
+.tt-cell-fac{font-size:10px;color:#374151}
+.tt-cell-lab{font-size:9px;color:#1D4ED8;font-weight:700}
+.tt-cell-room{font-size:9px;color:#0369a1;font-weight:700}
+.tt-break{background:#F4F4F4;text-align:center;font-size:10px;font-weight:700;letter-spacing:2px;color:#374151;text-transform:uppercase}
+.tt-time{font-family:'Space Mono',monospace;font-size:10px;color:#374151;text-align:center;white-space:nowrap;font-weight:700;background:#F9FAFB}
+
+
+@media (max-width:1000px){.stats,.grid3,.grid2,.form2{grid-template-columns:1fr 1fr}}
+@media (max-width:820px){#sidebar{position:static;width:100%;height:auto}#main{margin-left:0;padding:20px}.stats,.grid3,.grid2,.form2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="sidebar">
+  <div class="brand">
+    <div class="brand-badge">EF</div>
+    <div><div class="brand-title">EduFlow</div><div class="brand-sub">Student Planner</div></div>
+  </div>
+  <div class="section">Main</div>
+  <a class="nav-item active" onclick="showPage('dashboard',this)"><div class="nav-icon">📊</div>Dashboard</a>
+  <a class="nav-item" onclick="showPage('timetable',this)"><div class="nav-icon">📅</div>My Timetable</a>
+  <a class="nav-item" onclick="showPage('browse',this)"><div class="nav-icon">🗂️</div>All Timetables</a>
+
+  <div class="userbox">
+    <div class="user">
+      <div class="avatar" id="avatar">S</div>
+      <div><div class="user-name" id="sname">Student</div><div class="user-role">Student</div></div>
+    </div>
+    <div class="logout" onclick="logout()">🚪 Logout</div>
+  </div>
+</div>
+
+<div id="main">
+
+  <!-- ========== DASHBOARD ========== -->
+  <div class="page active" id="page-dashboard">
+    <div class="top">
+      <div><div class="title">Student Dashboard</div><div class="sub" id="dashSub">Your class timetable and study overview.</div></div>
+      <div class="date" id="date">-</div>
+    </div>
+
+    <!-- Setup card — always visible so student can switch class anytime -->
+    <div id="setupCard">
+      <div class="setup-card">
+        <div style="flex:1">
+          <h3>Select Your Class</h3>
+          <p>Choose your year, division and department to load your timetable and today's classes.</p>
+          <div class="setup-form">
+            <select id="setupYear">
+              <option value="">Year</option>
+              <option>FY</option><option>SY</option><option>TY</option><option>LY</option>
+            </select>
+            <select id="setupDiv">
+              <option value="">Division</option>
+              <option>A</option><option>B</option><option>C</option>
+            </select>
+            <select id="setupDept">
+              <option value="">Department</option>
+              <option>CSE - AIML</option><option>CSE - DS</option><option>CSE</option>
+              <option>Electrical</option><option>Mechanical</option><option>ENTC</option>
+              <option>BSH</option><option>Biotech</option><option>Civil</option>
+            </select>
+            <button class="btn-sky" onclick="saveClassSetup()">Load Timetable →</button>
+          </div>
+          <div id="currentClassBadge" style="display:none;margin-top:10px;font-size:12px;color:rgba(255,255,255,0.55);">
+            Currently viewing: <span id="currentClassLabel" style="color:#38BDF8;font-weight:700;"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats row -->
+    <div class="stats">
+      <div class="card stat"><div class="icon" style="background:#E0F4FF">📚</div><div class="num" id="s1">0</div><div class="label">Subjects</div><div class="water">SUB</div></div>
+    </div>
+
+    <!-- Today's classes + quick actions -->
+    <div class="grid2">
+      <div class="card">
+        <div class="head">
+          <div class="head-title">Today's Classes 🕐</div>
+          <span class="chip" id="todayDayChip">-</span>
+        </div>
+        <div id="todayClasses"><div class="empty">Select your class above to see today's schedule.</div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="action" onclick="showPage('timetable',document.querySelectorAll('.nav-item')[1])">
+          <div class="action-title">📅 View Full Timetable</div>
+          <div class="action-copy">See your complete weekly class schedule.</div>
+        </div>
+        <div class="action" onclick="showPage('browse',document.querySelectorAll('.nav-item')[2])">
+          <div class="action-title">🗂️ Browse All Timetables</div>
+          <div class="action-copy">See all timetables published by Admin / HOD.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== MY TIMETABLE ========== -->
+  <div class="page" id="page-timetable">
+    <div class="top">
+      <div><div class="title">My Timetable</div><div class="sub" id="ttSubLabel">Select your class on the Dashboard to load your timetable.</div></div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn" onclick="printMyTimetable()" style="border-radius:100px;padding:10px 20px;font-size:13px;background:#D1FAE5;color:#065F46;">🖨 Print</button>
+      </div>
+    </div>
+    <div class="card">
+      <div id="studentTTGrid"><div class="empty">No timetable loaded yet. Select your class on the Dashboard.</div></div>
+    </div>
+  </div>
+
+  <!-- ========== ALL TIMETABLES (Browse) ========== -->
+  <div class="page" id="page-browse">
+    <div class="top">
+      <div><div class="title">All Timetables</div><div class="sub">All timetables published by Admin / HOD. Click any to view.</div></div>
+    </div>
+    <!-- Filter bar -->
+    <div class="card" style="margin-bottom:20px;">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <select id="filterYear" onchange="renderBrowse()" style="padding:9px 14px;border-radius:10px;border:1.5px solid #E5E7EB;background:#F7F9FC;font:14px 'DM Sans',sans-serif;outline:none;">
+          <option value="">All Years</option>
+          <option>FY</option><option>SY</option><option>TY</option><option>LY</option>
+        </select>
+        <select id="filterDiv" onchange="renderBrowse()" style="padding:9px 14px;border-radius:10px;border:1.5px solid #E5E7EB;background:#F7F9FC;font:14px 'DM Sans',sans-serif;outline:none;">
+          <option value="">All Divisions</option>
+          <option>A</option><option>B</option><option>C</option>
+        </select>
+        <select id="filterDept" onchange="renderBrowse()" style="padding:9px 14px;border-radius:10px;border:1.5px solid #E5E7EB;background:#F7F9FC;font:14px 'DM Sans',sans-serif;outline:none;">
+          <option value="">All Departments</option>
+          <option>CSE - AIML</option><option>CSE - DS</option><option>CSE</option>
+          <option>Electrical</option><option>Mechanical</option><option>ENTC</option>
+          <option>BSH</option><option>Biotech</option><option>Civil</option>
+        </select>
+        <button class="ghost" onclick="document.getElementById('filterYear').value='';document.getElementById('filterDiv').value='';document.getElementById('filterDept').value='';renderBrowse();">Clear Filters</button>
+      </div>
+    </div>
+    <!-- Timetable cards list -->
+    <div id="browseList"></div>
+    <!-- Expanded timetable view -->
+    <div id="browseExpanded" style="display:none;margin-top:20px;">
+      <div class="card">
+        <div class="head">
+          <div class="head-title" id="browseExpandedTitle">Timetable</div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn" onclick="printBrowsedTimetable()" style="border-radius:100px;padding:10px 20px;font-size:13px;background:#D1FAE5;color:#065F46;">🖨 Print</button>
+            <button class="ghost" onclick="closeBrowseExpanded()">✕ Close</button>
+          </div>
+        </div>
+        <div id="browseExpandedGrid"></div>
+      </div>
+    </div>
+  </div>
+</div><!-- end #main -->
+
+<script>
+// ── AUTH ──────────────────────────────────────────────────────────────────
+const token       = localStorage.getItem('token');
+const role        = localStorage.getItem('role');
+const studentName = localStorage.getItem('name') || 'Student';
+if (!token || role !== 'Student') {
+  const base = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
+  window.location.href = base + 'index.html';
+}
+
+document.getElementById('sname').textContent   = studentName;
+document.getElementById('avatar').textContent  = studentName.charAt(0).toUpperCase();
+
+// ── DATE ──────────────────────────────────────────────────────────────────
+const NOW   = new Date();
+const DAYS  = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MONTHS= ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+document.getElementById('date').textContent = `${DAYS[NOW.getDay()]}, ${NOW.getDate()} ${MONTHS[NOW.getMonth()]} ${NOW.getFullYear()}`;
+document.getElementById('todayDayChip').textContent = DAYS[NOW.getDay()];
+
+// ── TIMETABLE SLOT DEFINITIONS (match admin) ──────────────────────────────
+const TT_SLOTS = [
+  { label:'9:15 – 10:05',  type:'lec'   },
+  { label:'10:05 – 10:55', type:'lec'   },
+  { label:'10:55 – 11:15', type:'break', name:'Break' },
+  { label:'11:15 – 12:05', type:'lec'   },
+  { label:'12:05 – 12:55', type:'lec'   },
+  { label:'12:55 – 1:45',  type:'lunch', name:'Lunch Break' },
+  { label:'1:45 – 2:35',   type:'lec'   },
+  { label:'2:35 – 3:25',   type:'lec'   },
+  { label:'3:25 – 4:15',   type:'lec'   },
+];
+const TT_DAYS = ['Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+// Slot start times in [hour, minute] for "current class" detection
+const SLOT_START = { 0:[9,15], 1:[10,5], 3:[11,15], 4:[12,5], 6:[13,45], 7:[14,35], 8:[15,25] };
+const SLOT_END   = { 0:[10,5], 1:[10,55],3:[12,5],  4:[12,55],6:[14,35], 7:[15,25], 8:[16,15] };
+
+// ── CLASS SETUP (year/div/dept) ───────────────────────────────────────────
+const SETUP_KEY = `ef_student_class_${studentName}`;
+
+function getClassSetup() {
+  try { return JSON.parse(localStorage.getItem(SETUP_KEY)) || null; } catch { return null; }
+}
+
+function saveClassSetup() {
+  const year = document.getElementById('setupYear').value;
+  const div  = document.getElementById('setupDiv').value;
+  const dept = document.getElementById('setupDept').value;
+  if (!year || !div || !dept) { alert('Please select year, division and department.'); return; }
+  localStorage.setItem(SETUP_KEY, JSON.stringify({ year, div, dept }));
+  renderAll();
+}
+
+function clearClassSetup() {
+  localStorage.removeItem(SETUP_KEY);
+  renderAll();
+}
+
+// ── LOAD TIMETABLE FROM localStorage (saved by admin) ────────────────────
+function getMyTimetable() {
+  const setup = getClassSetup();
+  if (!setup) return null;
+  const all = JSON.parse(localStorage.getItem('ef_timetables') || '[]');
+  return all.find(tt =>
+    tt.year === setup.year &&
+    tt.div  === setup.div  &&
+    (tt.dept || '') === setup.dept
+  ) || null;
+}
+
+// ── COLOR HELPER ──────────────────────────────────────────────────────────
+function blendWithWhite(hex, factor) {
+  const h = (hex||'').replace('#','');
+  if(!/^[0-9a-fA-F]{6}$/.test(h)) return '#F0F9FF';
+  const r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);
+  const nr=Math.round(r+(255-r)*factor),ng=Math.round(g+(255-g)*factor),nb=Math.round(b+(255-b)*factor);
+  const x=n=>n.toString(16).padStart(2,'0');
+  return `#${x(nr)}${x(ng)}${x(nb)}`;
+}
+
+// ── RENDER DASHBOARD ──────────────────────────────────────────────────────
+function renderDashboard() {
+  const setup = getClassSetup();
+
+  if (setup) {
+    // Pre-fill selectors with saved values
+    document.getElementById('setupYear').value = setup.year || '';
+    document.getElementById('setupDiv').value  = setup.div  || '';
+    document.getElementById('setupDept').value = setup.dept || '';
+    document.getElementById('currentClassBadge').style.display = 'block';
+    document.getElementById('currentClassLabel').textContent = `${setup.year} — Div ${setup.div} | ${setup.dept}`;
+    document.getElementById('dashSub').textContent = `${setup.year} — Div ${setup.div} | ${setup.dept}`;
+  } else {
+    document.getElementById('currentClassBadge').style.display = 'none';
+    document.getElementById('dashSub').textContent = 'Select your class below to load your timetable.';
+  }
+
+  // Stats
+  document.getElementById('s1').textContent = setup ? countSubjectsFromTT() : 0;
+
+  renderTodayClasses();
+}
+
+function countSubjectsFromTT() {
+  const tt = getMyTimetable();
+  if (!tt || !tt.grid) return 0;
+  const names = new Set();
+  Object.values(tt.grid).forEach(slots => {
+    Object.values(slots||{}).forEach(cell => {
+      if (cell && cell.name) names.add(cell.name);
+    });
+  });
+  return names.size;
+}
+
+// ── TODAY'S CLASSES ───────────────────────────────────────────────────────
+function renderTodayClasses() {
+  const host  = document.getElementById('todayClasses');
+  const today = DAYS[NOW.getDay()];
+  const tt    = getMyTimetable();
+
+  if (!tt || !tt.grid || !tt.grid[today]) {
+    const setup = getClassSetup();
+    host.innerHTML = setup
+      ? `<div class="empty">No classes on ${today} or timetable not saved by admin yet.</div>`
+      : `<div class="empty">Select your class on the dashboard first.</div>`;
+    return;
+  }
+
+  const slots = tt.grid[today];
+  const nowMins = NOW.getHours() * 60 + NOW.getMinutes();
+  let html = '';
+  let count = 0;
+
+  TT_SLOTS.forEach((slot, si) => {
+    if (slot.type !== 'lec') return;
+    const cell = slots[si];
+    if (!cell || (cell.lab && cell.labPart === 2)) return;
+
+    count++;
+    const start = SLOT_START[si];
+    // For lab double slots, use the END time of the NEXT slot (labPart 2)
+    const isLabDouble = cell.lab && cell.labPart === 1;
+    const nextSi = si + 1; // labPart 2 is always the next slot index
+    const end = isLabDouble && SLOT_END[nextSi] ? SLOT_END[nextSi] : SLOT_END[si];
+    const startMins = start ? start[0]*60+start[1] : 0;
+    const endMins   = end   ? end[0]*60+end[1]     : 0;
+    const isNow = start && nowMins >= startMins && nowMins < endMins;
+    const isPast = end && nowMins >= endMins;
+
+    const subjectLabel = cell.name || '-';
+    const facLabel     = cell.assignedFaculty || cell.faculty || '-';
+    const typeLabel    = cell.lab ? 'Lab' : 'Lecture';
+    const pillClass    = cell.lab ? 'yellow' : 'blue';
+
+    // For lab double slots, build combined time label e.g. "11:15 – 12:55"
+    const startLabel = start ? `${start[0]}:${String(start[1]).padStart(2,'0')}` : '';
+    const endLabel   = end   ? `${end[0]}:${String(end[1]).padStart(2,'0')}` : '';
+    const timeLabel  = isLabDouble ? `${startLabel} – ${endLabel}` : slot.label;
+
+    html += `
+      <div class="today-slot" style="${isNow ? 'border-color:#38BDF8;background:#F0F9FF;' : isPast ? 'opacity:0.5;' : ''}">
+        <div class="today-time">${timeLabel}</div>
+        <div style="flex:1">
+          <div class="today-subject">${subjectLabel}</div>
+          <div class="today-faculty">${facLabel}</div>
+          ${cell.room ? `<div style="font-size:11px;color:#0369a1;font-weight:600;margin-top:2px;">📍 ${cell.room}</div>` : ''}
+        </div>
+        <div class="today-badge">
+          ${isNow ? '<span class="now-indicator">NOW</span>' : `<span class="pill ${pillClass}">${typeLabel}</span>`}
+        </div>
+      </div>`;
+  });
+
+  host.innerHTML = count ? html : `<div class="empty">No classes scheduled for ${today}.</div>`;
+}
+
+// ── RENDER FULL TIMETABLE ─────────────────────────────────────────────────
+function renderStudentTimetable() {
+  const host  = document.getElementById('studentTTGrid');
+  const label = document.getElementById('ttSubLabel');
+  const tt    = getMyTimetable();
+  const setup = getClassSetup();
+
+  if (!setup) {
+    label.textContent = 'Select your class on the Dashboard first.';
+    host.innerHTML = '<div class="empty">No class selected.</div>';
+    return;
+  }
+  label.textContent = `${setup.year} — Div ${setup.div} | ${setup.dept}`;
+
+  if (!tt || !tt.grid) {
+    host.innerHTML = '<div class="empty">Timetable not published by admin yet. Check back later.</div>';
+    return;
+  }
+
+  let html = `<div class="tt-wrap"><table class="tt-table"><thead><tr>
+    <th style="min-width:90px;">Time</th>
+    ${TT_DAYS.map(d=>`<th>${d}</th>`).join('')}
+  </tr></thead><tbody>`;
+
+  TT_SLOTS.forEach((slot, si) => {
+    if (slot.type === 'break' || slot.type === 'lunch') {
+      html += `<tr><td class="tt-time tt-break">${slot.label}</td><td colspan="${TT_DAYS.length}" class="tt-break">${slot.name}</td></tr>`;
+      return;
+    }
+    html += `<tr><td class="tt-time">${slot.label}</td>`;
+    TT_DAYS.forEach(day => {
+      const cell = (tt.grid[day] && tt.grid[day][si]) || null;
+      if (!cell) { html += `<td></td>`; return; }
+      if (cell.lab && cell.labPart === 2) return;
+      const bg = blendWithWhite(cell.color, 0.45);
+      const rowspan = (cell.lab && cell.labPart === 1) ? ' rowspan="2"' : '';
+      html += `<td${rowspan} style="background:#fff;">
+        <div class="tt-cell" style="background:${bg};">
+          <div class="tt-cell-name">${cell.name||''}</div>
+          <div class="tt-cell-fac">${cell.assignedFaculty||cell.faculty||''}</div>
+          ${cell.room ? `<div style="font-size:9px;color:#0369a1;font-weight:700;">${cell.room}</div>` : (cell.lab ? '<div class="tt-cell-lab">LAB</div>' : '')}
+        </div>
+      </td>`;
+    });
+    html += `</tr>`;
+  });
+
+  html += `</tbody></table></div>`;
+  host.innerHTML = html;
+}
+
+// ── BROWSE ALL TIMETABLES ─────────────────────────────────────────────────
+function renderBrowse() {
+  const host = document.getElementById('browseList');
+  const fy   = document.getElementById('filterYear').value;
+  const fd   = document.getElementById('filterDiv').value;
+  const fdt  = document.getElementById('filterDept').value;
+
+  let all = [];
+  try { all = JSON.parse(localStorage.getItem('ef_timetables') || '[]'); } catch {}
+
+  // Filter
+  const filtered = all.filter(tt =>
+    (!fy  || tt.year === fy)  &&
+    (!fd  || tt.div  === fd)  &&
+    (!fdt || (tt.dept||'') === fdt)
+  );
+
+  if (!filtered.length) {
+    host.innerHTML = `<div class="card"><div class="empty">${all.length ? 'No timetables match your filters.' : 'No timetables have been published by Admin / HOD yet.'}</div></div>`;
+    return;
+  }
+
+  host.innerHTML = `<div class="list">${filtered.map((tt, i) => {
+    const subjectSet = new Set();
+    if (tt.grid) Object.values(tt.grid).forEach(slots =>
+      Object.values(slots||{}).forEach(cell => { if (cell && cell.name) subjectSet.add(cell.name); })
+    );
+    const subCount = subjectSet.size;
+    return `
+      <div class="item" style="cursor:pointer;" onclick="expandBrowseTT(${all.indexOf(tt)})">
+        <div class="item-top">
+          <div>
+            <div class="item-title">${tt.year || '?'} — Div ${tt.div || '?'} &nbsp;|&nbsp; ${tt.dept || 'Unknown Dept'}</div>
+            <div class="item-sub">${subCount} subject${subCount !== 1 ? 's' : ''} · Click to view full timetable</div>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <span class="pill blue">${tt.year || '?'}</span>
+            <span class="pill purple">Div ${tt.div || '?'}</span>
+            <span class="pill green">${tt.dept || '?'}</span>
+          </div>
+        </div>
+      </div>`;
+  }).join('')}</div>`;
+}
+
+function expandBrowseTT(index) {
+  let all = [];
+  try { all = JSON.parse(localStorage.getItem('ef_timetables') || '[]'); } catch {}
+  const tt = all[index];
+  if (!tt) return;
+
+  document.getElementById('browseExpandedTitle').textContent =
+    `${tt.year} — Div ${tt.div} | ${tt.dept}`;
+
+  const host = document.getElementById('browseExpandedGrid');
+  if (!tt.grid) { host.innerHTML = '<div class="empty">No timetable data found.</div>'; }
+  else {
+    let html = `<div class="tt-wrap"><table class="tt-table"><thead><tr>
+      <th style="min-width:90px;">Time</th>
+      ${TT_DAYS.map(d=>`<th>${d}</th>`).join('')}
+    </tr></thead><tbody>`;
+    TT_SLOTS.forEach((slot, si) => {
+      if (slot.type === 'break' || slot.type === 'lunch') {
+        html += `<tr><td class="tt-time tt-break">${slot.label}</td><td colspan="${TT_DAYS.length}" class="tt-break">${slot.name}</td></tr>`;
+        return;
+      }
+      html += `<tr><td class="tt-time">${slot.label}</td>`;
+      TT_DAYS.forEach(day => {
+        const cell = (tt.grid[day] && tt.grid[day][si]) || null;
+        if (!cell) { html += `<td></td>`; return; }
+        if (cell.lab && cell.labPart === 2) return;
+        const bg = blendWithWhite(cell.color, 0.45);
+        const rowspan = (cell.lab && cell.labPart === 1) ? ' rowspan="2"' : '';
+        html += `<td${rowspan} style="background:#fff;">
+          <div class="tt-cell" style="background:${bg};">
+            <div class="tt-cell-name">${cell.name||''}</div>
+            <div class="tt-cell-fac">${cell.assignedFaculty||cell.faculty||''}</div>
+            ${cell.room ? `<div style="font-size:9px;color:#0369a1;font-weight:700;">${cell.room}</div>` : (cell.lab ? '<div class="tt-cell-lab">LAB</div>' : '')}
+          </div>
+        </td>`;
+      });
+      html += `</tr>`;
+    });
+    html += `</tbody></table></div>`;
+    host.innerHTML = html;
+  }
+
+  const expanded = document.getElementById('browseExpanded');
+  expanded.style.display = 'block';
+  expanded.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function closeBrowseExpanded() {
+  document.getElementById('browseExpanded').style.display = 'none';
+}
+
+// ── SAVE TIMETABLE (Student) ──────────────────────────────────────────────
+function saveTimetableToStorage(tt) {
+  if (!tt || !tt.grid) { alert('No timetable data to save.'); return false; }
+  const tts = JSON.parse(localStorage.getItem('ef_timetables') || '[]');
+  const identity = `${tt.year||''}|${tt.div||''}|${tt.sem||''}|${tt.dept||''}`;
+  const existIdx = tts.findIndex(t =>
+    `${t.year||''}|${t.div||''}|${t.sem||''}|${t.dept||''}` === identity
+  );
+  // Clone grid and strip undo markers
+  const gridBaseline = JSON.parse(JSON.stringify(tt.grid));
+  Object.keys(gridBaseline).forEach(day => {
+    Object.keys(gridBaseline[day] || {}).forEach(si => {
+      const cell = gridBaseline[day][si];
+      if (cell && typeof cell === 'object') delete cell._efRestore;
+    });
+  });
+  const toSave = { ...tt, gridBaseline };
+  if (existIdx !== -1) tts[existIdx] = toSave;
+  else tts.push(toSave);
+  localStorage.setItem('ef_timetables', JSON.stringify(tts));
+  return true;
+}
+
+function saveMyTimetable() {
+  const tt = getMyTimetable();
+  if (!tt) { alert('No timetable loaded. Please select your class first.'); return; }
+  if (saveTimetableToStorage(tt)) {
+    alert('✅ Timetable saved successfully!');
+    renderBrowse();
+  }
+}
+
+function saveBrowsedTimetable() {
+  let all = [];
+  try { all = JSON.parse(localStorage.getItem('ef_timetables') || '[]'); } catch {}
+  const title = document.getElementById('browseExpandedTitle').textContent;
+  // Find the timetable matching the displayed title
+  const tt = all.find(t => `${t.year} — Div ${t.div} | ${t.dept}` === title);
+  if (!tt) { alert('Could not find timetable data.'); return; }
+  if (saveTimetableToStorage(tt)) {
+    alert('✅ Timetable saved successfully!');
+    renderBrowse();
+  }
+}
+
+// ── PAGE NAVIGATION ───────────────────────────────────────────────────────
+function showPage(page, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  document.getElementById(`page-${page}`).classList.add('active');
+  if (el) el.classList.add('active');
+  renderAll();
+}
+
+// ── RENDER ALL ────────────────────────────────────────────────────────────
+function renderAll() {
+  renderDashboard();
+  renderStudentTimetable();
+  renderBrowse();
+}
+
+// ── PRINT TIMETABLE ──────────────────────────────────────────────────────
+function buildPrintHtml(tt, title) {
+  const PRINT_DAYS = ['Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const PRINT_SLOTS = [
+    { label:'9:15 – 10:05',  type:'lec' },
+    { label:'10:05 – 10:55', type:'lec' },
+    { label:'10:55 – 11:15', type:'break', name:'Break' },
+    { label:'11:15 – 12:05', type:'lec' },
+    { label:'12:05 – 12:55', type:'lec' },
+    { label:'12:55 – 1:45',  type:'lunch', name:'Lunch Break' },
+    { label:'1:45 – 2:35',   type:'lec' },
+    { label:'2:35 – 3:25',   type:'lec' },
+    { label:'3:25 – 4:15',   type:'lec' },
+  ];
+  const dept = tt.dept || '';
+  const now = new Date();
+  const yr = now.getFullYear();
+  const acYear = now.getMonth() >= 6 ? `${yr}-${String(yr+1).slice(2)}` : `${yr-1}-${String(yr).slice(2)}`;
+  let rows = '';
+  PRINT_SLOTS.forEach((slot, si) => {
+    if (slot.type === 'break' || slot.type === 'lunch') {
+      rows += `<tr><td style="padding:5px;border:1px solid #000;text-align:center;font-weight:bold;font-size:10px;">${slot.label}</td><td colspan="${PRINT_DAYS.length}" style="border:1px solid #000;text-align:center;font-weight:bold;font-size:10px;text-transform:uppercase;letter-spacing:2px;">${slot.name}</td></tr>`;
+      return;
+    }
+    rows += `<tr><td style="padding:5px;border:1px solid #000;text-align:center;font-size:10px;font-weight:bold;white-space:nowrap;">${slot.label}</td>`;
+    PRINT_DAYS.forEach(day => {
+      const cell = (tt.grid[day] && tt.grid[day][si]) || null;
+      if (!cell) { rows += `<td style="border:1px solid #000;padding:4px;min-width:80px;height:58px;"></td>`; return; }
+      if (cell.lab && cell.labPart === 2) return;
+      const rowspan = (cell.lab && cell.labPart === 1) ? ' rowspan="2"' : '';
+      rows += `<td${rowspan} style="border:1px solid #000;padding:5px;vertical-align:middle;text-align:center;">
+        <div style="font-weight:bold;font-size:10px;">${cell.name || ''}</div>
+        <div style="font-size:9px;color:#333;">(${cell.assignedFaculty || cell.faculty || '-'})</div>
+        ${cell.room ? `<div style="font-size:9px;font-weight:bold;color:#000;">${cell.room}</div>` : ''}
+        ${cell.lab ? '<div style="font-size:9px;font-weight:bold;">Lab (Double Slot)</div>' : ''}
+      </td>`;
+    });
+    rows += '</tr>';
+  });
+  return `<!DOCTYPE html><html><head><title>${title}</title>
+  <style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:'Times New Roman',serif;background:#fff;color:#000;padding:10mm;}@page{size:A4 landscape;margin:10mm;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #000;padding:5px;vertical-align:middle;text-align:center;}@media print{*{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}</style>
+  </head><body>
+  <div style="border:2px solid #000;width:100%;">
+    <div style="border-bottom:2px solid #000;padding:8px;text-align:center;">
+      <div style="font-size:14px;font-weight:bold;">K.I.T's College of Engineering (Autonomous), Kolhapur</div>
+      <div style="font-size:12px;font-weight:bold;">Department of ${dept}</div>
+      <div style="font-size:12px;font-weight:bold;">Time Table A.Y. ${acYear}</div>
+    </div>
+    <div style="border-bottom:2px solid #000;padding:6px;text-align:center;font-size:13px;font-weight:bold;">${tt.year} ${dept} - Div ${tt.div}</div>
+    <table style="font-size:11px;">
+      <thead><tr><th style="background:#fff;font-size:11px;min-width:90px;">Time</th>${PRINT_DAYS.map(d=>`<th style="background:#fff;font-size:11px;">${d}</th>`).join('')}</tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div></body></html>`;
+}
+function printMyTimetable() {
+  const tt = getMyTimetable();
+  if (!tt || !tt.grid) { alert('No timetable loaded. Please select your class first.'); return; }
+  const setup = getClassSetup();
+  const title = setup ? `${setup.year} - Div ${setup.div} Timetable` : 'My Timetable';
+  const w = window.open('', '_blank'); w.document.write(buildPrintHtml(tt, title)); w.document.close(); w.focus(); w.print();
+}
+function printBrowsedTimetable() {
+  let all = [];
+  try { all = JSON.parse(localStorage.getItem('ef_timetables') || '[]'); } catch {}
+  const title = document.getElementById('browseExpandedTitle').textContent;
+  const tt = all.find(t => `${t.year} — Div ${t.div} | ${t.dept}` === title);
+  if (!tt || !tt.grid) { alert('Could not find timetable data.'); return; }
+  const w = window.open('', '_blank'); w.document.write(buildPrintHtml(tt, title)); w.document.close(); w.focus(); w.print();
+}
+
+function logout() {
+  ['token','role','name','email'].forEach(k => localStorage.removeItem(k));
+  const base = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
+  window.location.href = base + 'index.html';
+}
+
+renderAll();
+</script>
+</body>
+</html>
